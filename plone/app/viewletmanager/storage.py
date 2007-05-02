@@ -1,27 +1,30 @@
 from zope.interface import implements
 
 from persistent import Persistent
+from persistent.dict import PersistentDict
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 
 
 class ViewletSettingsStorage(Persistent):
+    implements(IViewletSettingsStorage)
+
+    def __init__(self):
+        self._order = PersistentDict()
+        self._hidden = PersistentDict()
+
     def getOrder(self, name, skinname):
-        if name == "plone.portaltop":
-            return ('plone.header',
-                     'plone.personal_bar',
-                     'plone.app.i18n.locales.languageselector',
-                     'plone.path_bar',
-                    )
-        elif name == "plone.portalheader":
-            return ('plone.skip_links',
-                     'plone.site_actions',
-                     'plone.searchbox',
-                     'plone.logo',
-                     'plone.global_sections',
-                    )
-        else:
-            return ()
+        skin = self._order.get(skinname, {})
+        return skin.get(name, ())
+
+    def setOrder(self, name, skinname, order):
+        skin = self._order.setdefault(skinname, PersistentDict())
+        skin[name] = tuple(order)
 
     def getHidden(self, name, skinname):
-        return ()
+        skin = self._hidden.get(skinname, {})
+        return skin.get(name, ())
+
+    def setHidden(self, name, skinname, hidden):
+        skin = self._hidden.setdefault(skinname, PersistentDict())
+        skin[name] = tuple(hidden)

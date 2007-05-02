@@ -11,6 +11,10 @@ class OrderedViewletManager(object):
         """Filter the viewlets.
     
         ``viewlets`` is a list of tuples of the form (name, viewlet).
+
+        This filters the viewlets just like Five, but also filters out
+        viewlets by name from the local utility which implements the
+        IViewletSettingsStorage interface.
         """
         storage = getUtility(IViewletSettingsStorage)
         skinname = self.context.getCurrentSkinName()
@@ -31,6 +35,10 @@ class OrderedViewletManager(object):
         """Sort the viewlets.
 
         ``viewlets`` is a list of tuples of the form (name, viewlet).
+
+        This sorts the viewlets by the order looked up from the local utility
+        which implements the IViewletSettingsStorage interface. The remaining
+        ones are sorted just like Five does it.
         """
 
         storage = getUtility(IViewletSettingsStorage)
