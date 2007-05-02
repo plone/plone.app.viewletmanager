@@ -51,27 +51,29 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         """
         Export the object as a DOM node.
         """
-        fragment = self._doc.createDocumentFragment()
-        for skin in self._order:
-            for name in self._order[skin]:
+        storage = getUtility(IViewletSettingsStorage)
+        output = self._doc.createElement('object')
+        for skin in storage._order:
+            for name in storage._order[skin]:
                 node = self._doc.createElement('order')
                 node.setAttribute('skinname', skin)
                 node.setAttribute('manager', name)
-                for viewlet in self._order[skin][name]:
+                for viewlet in storage._order[skin][name]:
                     child = self._doc.createElement('viewlet')
                     child.setAttribute('name', viewlet)
                     node.appendChild(child)
-                fragment.appendChild(node)
-        for skin in self._hidden:
-            for name in self._hidden[skin]:
+                output.appendChild(node)
+        for skin in storage._hidden:
+            for name in storage._hidden[skin]:
                 node = self._doc.createElement('hidden')
                 node.setAttribute('skinname', skin)
                 node.setAttribute('manager', name)
-                for viewlet in self._hidden[skin][name]:
+                for viewlet in storage._hidden[skin][name]:
                     child = self._doc.createElement('viewlet')
                     child.setAttribute('name', viewlet)
                     node.appendChild(child)
-                fragment.appendChild(node)
+                output.appendChild(node)
+        return output
 
     def _importNode(self, node):
         """
