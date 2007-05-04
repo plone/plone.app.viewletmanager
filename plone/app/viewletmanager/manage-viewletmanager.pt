@@ -1,0 +1,20 @@
+<dl class="portlet notify">
+    <dt class="portletHeader">
+        ViewletManager: <span tal:content="view/name">ViewletManager name</span>
+    </dt>
+    <dd class="portletItem">
+        <dl class="portlet"
+            tal:repeat="viewlet options/viewlets">
+            <dt class="portletHeader">
+                Viewlet: <span tal:content="viewlet/name">Viewlet name</span>
+                <span class="up">&uarr;</span>
+                <span class="down">&darr;</span>
+                <span class="delete">&times;</span>
+            </dt>
+            <dd class="portletItem">
+                <div tal:replace="structure viewlet/content"></div>
+                <div class="visualClear"><!-- --></div>
+            </dd>
+        </dl>
+    </dd>
+</dl>

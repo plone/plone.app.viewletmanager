@@ -1,11 +1,19 @@
-from zope.component import getUtility
+from zope.interface import implements
+from zope.component import getUtility, getAdapters
+
+from zope.viewlet.interfaces import IViewlet
 
 from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from plone.app.viewletmanager.interfaces import IViewletManagementView
+
 
 class OrderedViewletManager(object):
+    manager_template = ViewPageTemplateFile('manage-viewletmanager.pt')
 
     def filter(self, viewlets):
         """Filter the viewlets.
@@ -59,3 +67,49 @@ class OrderedViewletManager(object):
 
         # return both together
         return result + remaining
+
+    def render(self):
+        """See zope.contentprovider.interfaces.IContentProvider"""
+
+        # check whether we are in the manager view
+        is_managing = False
+        parent = getattr(self, '__parent__', None)
+        while parent is not None:
+            if IViewletManagementView.providedBy(parent):
+                is_managing = True
+                break
+            parent = getattr(parent, '__parent__', None)
+
+        if is_managing:
+            # if we are in the managing view, then fetch all viewlets again
+            viewlets = getAdapters(
+                (self.context, self.request, self.__parent__, self),
+                IViewlet)
+
+            # sort them first
+            viewlets = self.sort(viewlets)
+
+            # then render the ones which are accessible
+            results = []
+            for name, viewlet in viewlets:
+                viewlet = viewlet.__of__(viewlet.context)
+                if guarded_hasattr(viewlet, 'render'):
+                    viewlet.update()
+                    results.append({'name': name,
+                                    'content': viewlet.render()})
+                else:
+                    results.append({'name': name,
+                                    'content': ""})
+
+            self.name = self.__name__
+            # and output them
+            return self.manager_template(viewlets=results)
+        # the rest is standard behaviour from zope.viewlet
+        elif self.template:
+            return self.template(viewlets=self.viewlets)
+        else:
+            return u'\n'.join([viewlet.render() for viewlet in self.viewlets])
+
+
+class ManageViewlets(BrowserView):
+    implements(IViewletManagementView)
