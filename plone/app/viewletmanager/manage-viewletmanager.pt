@@ -4,12 +4,23 @@
     </dt>
     <dd class="portletItem">
         <dl class="portlet"
-            tal:repeat="viewlet options/viewlets">
+            tal:repeat="viewlet options/viewlets"
+            tal:attributes="class python:'portlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
             <dt class="portletHeader">
                 Viewlet: <span tal:content="viewlet/name">Viewlet name</span>
-                <span class="up">&uarr;</span>
-                <span class="down">&darr;</span>
-                <span class="delete">&times;</span>
+                (<span tal:content="viewlet/index">Index</span>)
+                <a class="up"
+                   tal:condition="viewlet/up_url | nothing"
+                   tal:attributes="href viewlet/up_url">&uarr;</a>
+                <a class="down"
+                   tal:condition="viewlet/down_url | nothing"
+                   tal:attributes="href viewlet/down_url">&darr;</a>
+                <a class="hide"
+                   tal:condition="viewlet/hide_url | nothing"
+                   tal:attributes="href viewlet/hide_url">hide</a>
+                <a class="show"
+                   tal:condition="viewlet/show_url | nothing"
+                   tal:attributes="href viewlet/show_url">show</a>
             </dt>
             <dd class="portletItem">
                 <div tal:replace="structure viewlet/content"></div>
