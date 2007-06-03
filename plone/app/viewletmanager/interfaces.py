@@ -19,3 +19,7 @@ class IViewletSettingsStorage(Interface):
     def setHidden(name, skinname, hidden):
         """Takes the tuple of names from ``hidden`` and stores it for the
            given viewletmanager (name) and skin name."""
+
+
+class IViewletManagementView(Interface):
+    pass
