@@ -27,16 +27,11 @@ _VIEWLETS_XML = """\
   <viewlet name="plone.logo"/>
   <viewlet name="plone.global_tabs"/>
  </order>
- <order manager="plone.top" skinname="default_skin">
-  <viewlet name="plone.searchbox"/>
-  <viewlet name="plone.logo"/>
-  <viewlet name="plone.global_tabs"/>
- </order>
 </object>
 """
 
 
-class ViewletSettingsStorageXMLAdapter(BodyAdapterTestCase):
+class ViewletSettingsStorageXMLAdapterTest(BodyAdapterTestCase):
 
     def _getTargetClass(self):
         from plone.app.viewletmanager.exportimport.storage \
@@ -61,11 +56,13 @@ class ViewletSettingsStorageXMLAdapter(BodyAdapterTestCase):
 
         self._BODY = _VIEWLETS_XML
 
+    def test_something(self):
+        self.assertEqual('toto', 'lulu')
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapter))
+    suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapterTest))
     return suite
 
 if __name__ == '__main__':
