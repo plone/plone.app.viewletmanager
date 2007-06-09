@@ -5,6 +5,7 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 
+from plone.app.viewletmanager.storage import DEFAULT_SKINNAME
 
 def importViewletSettingsStorage(context):
     """Import viewlet settings."""
@@ -85,11 +86,18 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 continue
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
+            make_default = False
+            if child.hasAttribute('make_default'):
+                make_default = self._convertToBoolean(child.getAttribute('make_default'))
             values = []
             for value in child.childNodes:
                 if value.nodeName == 'viewlet':
                     values.append(value.getAttribute('name'))
             if child.nodeName == 'order':
                 storage.setOrder(manager, skinname, tuple(values))
+                if make_default == True:
+                    storage.setDefaultOrder(manager, tuple(values))
             elif child.nodeName == 'hidden':
                 storage.setHidden(manager, skinname, tuple(values))
+                if make_default == True:
+                    storage.setDefaultHidden(manager, tuple(values))
