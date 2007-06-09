@@ -24,14 +24,18 @@ And it will be returned.
     >>> storage.getOrder('plone.top', 'Plone Default')
     ('plone.logo', 'plone.global_tabs')
 
-For other skins it would still return the same, because it was stored as
-default (fallback) value the first time the order of that viewlet manager was
-initialized.
+The default order should now be the same as the first one that was edited.
+
+    >>> from plone.app.viewletmanager.storage import DEFAULT_SKINNAME
+    >>> storage.getOrder('plone.top', DEFAULT_SKINNAME)
+    ('plone.logo', 'plone.global_tabs')
+
+For other skins it would then return the default order.
 
     >>> storage.getOrder('plone.top', 'MySkin')
     ('plone.logo', 'plone.global_tabs')
 
-we can set another default order if needed.
+We can still set another default order if needed.
 
     >>> storage.setDefaultOrder('plone.top', ('plone.global_tabs', 'plone.logo'))
     >>> storage.getOrder('plone.top', 'MySkin')
