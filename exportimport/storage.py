@@ -5,8 +5,6 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 
-from plone.app.viewletmanager.storage import DEFAULT_SKINNAME
-
 def importViewletSettingsStorage(context):
     """Import viewlet settings."""
     logger = context.getLogger('plone.app.viewletmanager')

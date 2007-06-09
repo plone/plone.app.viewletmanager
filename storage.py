@@ -17,7 +17,7 @@ class ViewletSettingsStorage(Persistent):
     def getOrder(self, name, skinname):
         skin = self._order.get(skinname, {})
         default_skin = self._order.get(DEFAULT_SKINNAME, {})
-        return skin.has_key(name) and skin[name] or default_skin.get(name, ())
+        return skin.get(name, ()) or default_skin.get(name, ())
 
     def setDefaultOrder(self, name, order):
         self.setOrder(name, DEFAULT_SKINNAME, order)
@@ -31,7 +31,7 @@ class ViewletSettingsStorage(Persistent):
     def getHidden(self, name, skinname):
         skin = self._hidden.get(skinname, {})
         default_skin = self._hidden.get(DEFAULT_SKINNAME, {})
-        return skin.has_key(name) and skin[name] or default_skin.get(name, ())
+        return skin.get(name, ()) or default_skin.get(name, ())
 
     def setDefaultHidden(self, name, hidden):
         self.setHidden(name, DEFAULT_SKINNAME, hidden)
