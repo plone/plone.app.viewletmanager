@@ -5,7 +5,7 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 
-from plone.app.viewletmanager.storage import DEFAULT_SKINNAME
+from plone.app.viewletmanager.storage import DEFAULT_SKINKEY
 
 def importViewletSettingsStorage(context):
     """Import viewlet settings."""
@@ -54,7 +54,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         """
         storage = getUtility(IViewletSettingsStorage)
         output = self._doc.createElement('object')
-        for skin in [s for s in storage._order if s != DEFAULT_SKINNAME]:
+        for skin in [s for s in storage._order if s != DEFAULT_SKINKEY]:
             for name in storage._order[skin]:
                 node = self._doc.createElement('order')
                 node.setAttribute('skinname', skin)
@@ -64,7 +64,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                     child.setAttribute('name', viewlet)
                     node.appendChild(child)
                 output.appendChild(node)
-        for skin in  [s for s in storage._hidden if s != DEFAULT_SKINNAME]:
+        for skin in  [s for s in storage._hidden if s != DEFAULT_SKINKEY]:
             for name in storage._hidden[skin]:
                 node = self._doc.createElement('hidden')
                 node.setAttribute('skinname', skin)

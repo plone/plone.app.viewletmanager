@@ -48,6 +48,14 @@ _EMPTY_IMPORT = """\
 </object>
 """
 
+_EMPTY_NOPURGE_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order manager="plone.top" skinname="One" purge="False" />
+ <order manager="plone.top" skinname="Two" purge="False" />
+</object>
+"""
+
 _FRAGMENT1IMPORT = """\
 <?xml version="1.0"?>
 <object>
@@ -174,6 +182,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     _VIEWLETS_XML = _VIEWLETS_XML
     _EMPTY_IMPORT = _EMPTY_IMPORT
+    _EMPTY_NOPURGE_IMPORT = _EMPTY_NOPURGE_IMPORT
     _FRAGMENT1IMPORT = _FRAGMENT1IMPORT
 
     def test_empty_default_purge(self):
@@ -220,8 +229,11 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order['One']['plone.top']), 3)
         self.failIf('default_skin' in utility._hidden.keys())
 
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._EMPTY_IMPORT
+        # XXX (davconvent): not sure the False param is even taken care of
+#        context = DummyImportContext(site, False)
+#        context._files['viewlets.xml'] = self._EMPTY_IMPORT
+        context = DummyImportContext(site)
+        context._files['viewlets.xml'] = self._EMPTY_NOPURGE_IMPORT
         importViewletSettingsStorage(context)
 
         self.assertEqual(len(utility._order['One']['plone.top']), 3)
@@ -233,17 +245,17 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         site = self._initSite(populate=True)
         utility = getUtility(IViewletSettingsStorage)
 
-        self.assertEqual(utility.getOrder('plone.top', 'Non Defined'),
+        self.assertEqual(utility.getOrder('plone.top', 'Another Skin'),
                     ('plone.searchbox', 'plone.logo', 'plone.global_tabs'))
-        self.assertEqual(utility.getHidden('plone.top', 'Non Defined'), ())
+        self.assertEqual(utility.getHidden('plone.top', 'Another Skin'), ())
 
         context = DummyImportContext(site, False)
         context._files['viewlets.xml'] = self._FRAGMENT1IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('plone.top', 'Non Defined'),
+        self.assertEqual(utility.getOrder('plone.top', 'Another Skin'),
                     ('plone.logo', 'plone.searchbox', 'plone.global_tabs'))
-        self.assertEqual(utility.getHidden('plone.top', 'Non Defined'),
+        self.assertEqual(utility.getHidden('plone.top', 'Another Skin'),
                                                     ('plone.global_tabs',))
 
 def test_suite():
