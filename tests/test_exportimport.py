@@ -24,12 +24,12 @@ from plone.app.viewletmanager.storage import ViewletSettingsStorage
 _VIEWLETS_XML = """\
 <?xml version="1.0"?>
 <object>
- <order manager="plone.top" skinname="Plone Default">
+ <order manager="plone.top" skinname="One">
   <viewlet name="plone.searchbox"/>
   <viewlet name="plone.logo"/>
   <viewlet name="plone.global_tabs"/>
  </order>
- <hidden manager="plone.top" skinname="Plone Default">
+ <hidden manager="plone.top" skinname="Two">
   <viewlet name="plone.logo"/>
  </hidden>
 </object>
@@ -38,6 +38,28 @@ _VIEWLETS_XML = """\
 _EMPTY_EXPORT = """\
 <?xml version="1.0"?>
 <object />
+"""
+
+_EMPTY_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order manager="plone.top" skinname="One" />
+ <order manager="plone.top" skinname="Two" />
+</object>
+"""
+
+_FRAGMENT1IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order manager="plone.top" skinname="Three" make_default="True">
+  <viewlet name="plone.logo"/>
+  <viewlet name="plone.searchbox"/>
+  <viewlet name="plone.global_tabs"/>
+ </order>
+ <hidden manager="plone.top" skinname="Three" make_default="True">
+  <viewlet name="plone.global_tabs"/>
+ </hidden>
+</object>
 """
 
 class Layer:
@@ -64,28 +86,26 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         return ViewletSettingsStorageNodeAdapter
 
     def _populate(self, obj):
-        obj.setOrder('plone.top', "Plone Default", ('plone.searchbox',
+        obj.setOrder('plone.top', 'One', ('plone.searchbox',
                                                     'plone.logo',
                                                     'plone.global_tabs'))
-        obj.setHidden('plone.top', "Plone Default", ('plone.logo',))
+        obj.setHidden('plone.top', 'Two', ('plone.logo',))
 
     def _verifyImport(self, obj):
         orderdict = {u'plone.top': (u'plone.searchbox', u'plone.logo', u'plone.global_tabs')}
         hiddendict = {u'plone.top': (u'plone.logo',)}
         self.assertEqual(type(obj._order), PersistentDict)
-        self.failUnless('Plone Default' in obj._order.keys())
-        self.assertEqual(type(obj._order['Plone Default']), PersistentDict)
-        self.assertEqual(dict(obj._order['Plone Default']), orderdict)
+        self.failUnless('One' in obj._order.keys())
+        self.assertEqual(type(obj._order['One']), PersistentDict)
+        self.assertEqual(dict(obj._order['One']), orderdict)
         self.failUnless('default_skin' in obj._order.keys())
         self.assertEqual(type(obj._order['default_skin']), PersistentDict)
         self.assertEqual(dict(obj._order['default_skin']), orderdict)
         self.assertEqual(type(obj._hidden), PersistentDict)
-        self.failUnless('Plone Default' in obj._hidden.keys())
-        self.assertEqual(type(obj._hidden['Plone Default']), PersistentDict)
-        self.assertEqual(dict(obj._hidden['Plone Default']), hiddendict)
-        self.failUnless('default_skin' in obj._hidden.keys())
-        self.assertEqual(type(obj._hidden['default_skin']), PersistentDict)
-        self.assertEqual(dict(obj._hidden['default_skin']), hiddendict)
+        self.failUnless('Two' in obj._hidden.keys())
+        self.assertEqual(type(obj._hidden['Two']), PersistentDict)
+        self.assertEqual(dict(obj._hidden['Two']), hiddendict)
+        self.failIf('default_skin' in obj._hidden.keys())
 
     def setUp(self):
         setHooks()
@@ -114,18 +134,14 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         self.storage = getUtility(IViewletSettingsStorage)
 
         if populate:
-            self.storage.setOrder('plone.top', 'Plone Default',
-                                                    ('plone.searchbox',
-                                                     'plone.logo',
-                                                     'plone.global_tabs'))
-            self.storage.setHidden('plone.top', "Plone Default",
-                                                    ('plone.logo',))
+            self.storage.setOrder('plone.top', 'One', ('plone.searchbox',
+                                                       'plone.logo',
+                                                       'plone.global_tabs'))
+            self.storage.setHidden('plone.top', 'Two', ('plone.logo',))
 
         return site
 
-class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
-
-    layer = Layer
+class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty(self):
         from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
@@ -153,11 +169,89 @@ class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self._compareDOM(text, _VIEWLETS_XML)
         self.assertEqual(content_type, 'text/xml')
 
+
+class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+
+    _VIEWLETS_XML = _VIEWLETS_XML
+    _EMPTY_IMPORT = _EMPTY_IMPORT
+    _FRAGMENT1IMPORT = _FRAGMENT1IMPORT
+
+    def test_empty_default_purge(self):
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self._initSite(populate=True)
+        utility = getUtility(IViewletSettingsStorage)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 3)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+        context = DummyImportContext(site)
+        context._files['viewlets.xml'] = self._EMPTY_IMPORT
+        importViewletSettingsStorage(context)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 0)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+    def test_empty_explicit_purge(self):
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self._initSite(populate=True)
+        utility = getUtility(IViewletSettingsStorage)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 3)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+        # XXX (davconvent): not sure the True param is even taken care of
+        context = DummyImportContext(site, True)
+        context._files['viewlets.xml'] = self._EMPTY_IMPORT
+        importViewletSettingsStorage(context)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 0)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+    def test_empty_skip_purge(self):
+        # XXX (davconvent): We'll need to take care of this case later on
+        return
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self._initSite(populate=True)
+        utility = getUtility(IViewletSettingsStorage)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 3)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+        context = DummyImportContext(site, False)
+        context._files['viewlets.xml'] = self._EMPTY_IMPORT
+        importViewletSettingsStorage(context)
+
+        self.assertEqual(len(utility._order['One']['plone.top']), 3)
+        self.failIf('default_skin' in utility._hidden.keys())
+
+    def test_make_default(self):
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self._initSite(populate=True)
+        utility = getUtility(IViewletSettingsStorage)
+
+        self.assertEqual(utility.getOrder('plone.top', 'Non Defined'),
+                    ('plone.searchbox', 'plone.logo', 'plone.global_tabs'))
+        self.assertEqual(utility.getHidden('plone.top', 'Non Defined'), ())
+
+        context = DummyImportContext(site, False)
+        context._files['viewlets.xml'] = self._FRAGMENT1IMPORT
+        importViewletSettingsStorage(context)
+
+        self.assertEqual(utility.getOrder('plone.top', 'Non Defined'),
+                    ('plone.logo', 'plone.searchbox', 'plone.global_tabs'))
+        self.assertEqual(utility.getHidden('plone.top', 'Non Defined'),
+                                                    ('plone.global_tabs',))
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapterTests))
-    suite.addTest(makeSuite(ViewletSettingsStorageTests))
+    suite.addTest(makeSuite(exportViewletSettingsStorageTests))
+    suite.addTest(makeSuite(importViewletSettingsStorageTests))
     return suite
 
 if __name__ == '__main__':

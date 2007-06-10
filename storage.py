@@ -39,5 +39,3 @@ class ViewletSettingsStorage(Persistent):
     def setHidden(self, name, skinname, hidden):
         skin = self._hidden.setdefault(skinname, PersistentDict())
         skin[name] = tuple(hidden)
-        if not self.getHidden(name, DEFAULT_SKINNAME):
-            self.setDefaultHidden(name, hidden)
