@@ -1,11 +1,4 @@
-#
-# Exportimport adapter tests
-# Got inspiration from tests in CMFCore/exportimport/tests
-#
-
-#import os, sys
-#if __name__ == '__main__':
-#    execfile(os.path.join(sys.path[0], 'framework.py'))
+import base
 
 from OFS.Folder import Folder
 
@@ -21,7 +14,7 @@ from Products.GenericSetup.tests.common import DummyImportContext
 from Products.CMFCore.interfaces import ISkinsTool
 from Products.CMFCore.exportimport.tests.test_skins import DummySkinsTool
 from Products.CMFCore.exportimport.tests.test_skins import DummySite
-#from Products.CMFCore.testing import ExportImportZCMLLayer
+from Products.CMFCore.testing import ExportImportZCMLLayer
 
 from Products.CMFPlone.tests import PloneTestCase
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
@@ -51,7 +44,9 @@ _EMPTY_EXPORT = """\
 <object />
 """
 
-class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
+
+
+class ViewletSettingsStorageXMLAdapterTests(base.TestCase, BodyAdapterTestCase):
 
     def _getTargetClass(self):
         from plone.app.viewletmanager.exportimport.storage \
@@ -82,29 +77,15 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         self.assertEqual(type(obj._hidden['default_skin']), PersistentDict)
         self.assertEqual(dict(obj._hidden['default_skin']), hiddendict)
 
-    def setUp(self):
-        setHooks()
-        self.site = Folder('site')
-        gen = PloneGenerator()
-        gen.enableSite(self.site)
-        setSite(self.site)
-        sm = getSiteManager()
-        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
-
+    def afterSetUp(self):
+        self.site = self.portal
         self._obj = getUtility(IViewletSettingsStorage)
-
         self._BODY = _VIEWLETS_XML
 
-
-class _ViewletSettingsStorageSetup(BaseRegistryTests):
+class _ViewletSettingsStorageSetup(base.TestCase, BaseRegistryTests):
 
     def _initSite(self, populate=False):
-        self.root.site = Folder(id='site')
-        site = self.root.site
-
-        sm = getSiteManager(site)
-#        sm.registerUtility(site.portal_skins, ISkinsTool)
-        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
+        self.root.site = self.portal
         self.storage = getUtility(IViewletSettingsStorage)
 
         if populate:
@@ -115,11 +96,9 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
             self.storage.setHidden('plone.top', "Plone Default",
                                                     ('plone.logo',))
 
-        return site
+        return self.root.site
 
 class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
-
-    layer = PloneSite
 
     def test_empty(self):
         from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage

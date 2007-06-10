@@ -14,14 +14,8 @@ from Products.PloneTestCase.PloneTestCase import setupPloneSite
 # a portlets profile.
 setupPloneSite()
 
-class PortletsTestCase(PloneTestCase):
-    """Base class for integration tests for plone.app.portlets. This may
-    provide specific set-up and tear-down operations, or provide convenience
-    methods.
-    """
+class TestCase(PloneTestCase):
+    pass
 
-class PortletsFunctionalTestCase(FunctionalTestCase):
-    """Base class for functional integration tests for plone.app.portlets. 
-    This may provide specific set-up and tear-down operations, or provide 
-    convenience methods.
-    """
+class FunctionalTestCase(FunctionalTestCase):
+    pass
