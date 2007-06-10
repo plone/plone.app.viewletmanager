@@ -1,5 +1,6 @@
 #
 # Exportimport adapter tests
+# Got inspiration from tests in CMFCore/exportimport/tests
 #
 
 #import os, sys
@@ -20,11 +21,13 @@ from Products.GenericSetup.tests.common import DummyImportContext
 from Products.CMFCore.interfaces import ISkinsTool
 from Products.CMFCore.exportimport.tests.test_skins import DummySkinsTool
 from Products.CMFCore.exportimport.tests.test_skins import DummySite
-from Products.CMFCore.testing import ExportImportZCMLLayer
+#from Products.CMFCore.testing import ExportImportZCMLLayer
 
 from Products.CMFPlone.tests import PloneTestCase
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.CMFPlone.setuphandlers import PloneGenerator
+
+from Products.PloneTestCase.layer import PloneSite
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
@@ -116,7 +119,7 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
 
 class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
-    layer = ExportImportZCMLLayer
+    layer = PloneSite
 
     def test_empty(self):
         from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
@@ -125,17 +128,11 @@ class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context = DummyExportContext(site)
         exportViewletSettingsStorage(context)
 
-        # These fail for unknown reasons
-#        self.assertEqual(len(context._wrote), 1)
-#        filename, text, content_type = context._wrote[0]
-#        self.assertEqual(filename, 'viewlets.xml')
-#        self._compareDOM(text, _EMPTY_EXPORT)
-#        self.assertEqual(content_type, 'text/xml')
-
-        # So I'm trying to introspect a bit to see why it doesn't export
-        # It should export, ViewletSettingsStorageXMLAdapterTests proved it.
-        # we have [] here, means nothing was written, it should export at least one line.
-        print context._wrote
+        self.assertEqual(len(context._wrote), 1)
+        filename, text, content_type = context._wrote[0]
+        self.assertEqual(filename, 'viewlets.xml')
+        self._compareDOM(text, _EMPTY_EXPORT)
+        self.assertEqual(content_type, 'text/xml')
 
     def test_normal(self):
         from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
@@ -144,22 +141,11 @@ class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context = DummyExportContext(site)
         exportViewletSettingsStorage(context)
 
-        #These fail the same way as in test_empty()
-#        self.assertEqual(len(context._wrote), 1)
-#        filename, text, content_type = context._wrote[0]
-#        self.assertEqual(filename, 'viewlets.xml')
-#        self._compareDOM(text, _VIEWLETS_XML)
-#        self.assertEqual(content_type, 'text/xml')
-
-        # So I'm trying to introspect a bit to see why it doesn't export
-        # It should export, ViewletSettingsStorageXMLAdapterTests proved it.
-        # we have [] here, means nothing was written, it should export at least one line.
-        print context._wrote
-        a = self.storage._order['Plone Default']['plone.top']
-        print a
-        b = getUtility(IViewletSettingsStorage)._order['Plone Default']['plone.top']
-        print b
-        self.assertEqual(a, b)
+        self.assertEqual(len(context._wrote), 1)
+        filename, text, content_type = context._wrote[0]
+        self.assertEqual(filename, 'viewlets.xml')
+        self._compareDOM(text, _VIEWLETS_XML)
+        self.assertEqual(content_type, 'text/xml')
 
 def test_suite():
     from unittest import TestSuite, makeSuite
