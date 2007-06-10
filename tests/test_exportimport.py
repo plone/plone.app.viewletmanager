@@ -1,5 +1,3 @@
-import base
-
 from OFS.Folder import Folder
 
 from persistent.dict import PersistentDict
@@ -19,8 +17,6 @@ from Products.CMFCore.testing import ExportImportZCMLLayer
 from Products.CMFPlone.tests import PloneTestCase
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.CMFPlone.setuphandlers import PloneGenerator
-
-from Products.PloneTestCase.layer import PloneSite
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
@@ -44,9 +40,23 @@ _EMPTY_EXPORT = """\
 <object />
 """
 
+class Layer:
+    @classmethod
+    def setUp(cls):
+        from zope.component import provideAdapter
+        
+        from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
+        from Products.GenericSetup.interfaces import IBody
+        from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+        from Products.GenericSetup.interfaces import ISetupEnviron
+        
+        provideAdapter(factory=ViewletSettingsStorageNodeAdapter, 
+            adapts=(IViewletSettingsStorage, ISetupEnviron),
+            provides=IBody)
 
-
-class ViewletSettingsStorageXMLAdapterTests(base.TestCase, BodyAdapterTestCase):
+class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
+    
+    layer = Layer
 
     def _getTargetClass(self):
         from plone.app.viewletmanager.exportimport.storage \
@@ -77,15 +87,30 @@ class ViewletSettingsStorageXMLAdapterTests(base.TestCase, BodyAdapterTestCase):
         self.assertEqual(type(obj._hidden['default_skin']), PersistentDict)
         self.assertEqual(dict(obj._hidden['default_skin']), hiddendict)
 
-    def afterSetUp(self):
-        self.site = self.portal
+    def setUp(self):
+        setHooks()
+        self.site = Folder('site')
+        gen = PloneGenerator()
+        gen.enableSite(self.site)
+        setSite(self.site)
+        sm = getSiteManager()
+        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
+
         self._obj = getUtility(IViewletSettingsStorage)
+
         self._BODY = _VIEWLETS_XML
 
-class _ViewletSettingsStorageSetup(base.TestCase, BaseRegistryTests):
+
+class _ViewletSettingsStorageSetup(BaseRegistryTests):
+    
+    layer = Layer
 
     def _initSite(self, populate=False):
-        self.root.site = self.portal
+        self.root.site = Folder(id='site')
+        site = self.root.site
+
+        sm = getSiteManager(site)
+        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
 
         if populate:
@@ -96,9 +121,11 @@ class _ViewletSettingsStorageSetup(base.TestCase, BaseRegistryTests):
             self.storage.setHidden('plone.top', "Plone Default",
                                                     ('plone.logo',))
 
-        return self.root.site
+        return site
 
 class ViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+
+    layer = Layer
 
     def test_empty(self):
         from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
