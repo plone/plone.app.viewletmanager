@@ -258,6 +258,16 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('plone.top', 'Another Skin'),
                                                     ('plone.global_tabs',))
 
+    def test_z_keep_default(self):
+        #z if from having that test called last
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self._initSite(populate=True)
+        utility = getUtility(IViewletSettingsStorage)
+
+        self.assertEqual(utility.getOrder('plone.top', 'Another Skin'),
+                    ('plone.logo', 'plone.searchbox', 'plone.global_tabs'))
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
