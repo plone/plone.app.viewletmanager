@@ -1,7 +1,7 @@
 from OFS.Folder import Folder
 
 from persistent.dict import PersistentDict
-from zope.component import getUtility, queryUtility, queryMultiAdapter
+from zope.component import getUtility
 from zope.component import getSiteManager
 from zope.app.component.hooks import setHooks, setSite
 
@@ -53,6 +53,66 @@ _EMPTY_EXPORT = """\
 """
 
 _FRAGMENT1_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order skinname="*">
+  <viewlet name="three" insert-before="two"/>
+ </order>
+</object>
+"""
+
+_FRAGMENT2_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order skinname="*">
+  <viewlet name="four" insert-after="three"/>
+ </order>
+</object>
+"""
+
+_FRAGMENT3_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order skinname="*">
+  <viewlet name="three" insert-before="*"/>
+  <viewlet name="four" insert-after="*"/>
+ </order>
+</object>
+"""
+
+_FRAGMENT4_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order skinname="*">
+  <viewlet name="three" remove="1"/>
+ </order>
+</object>
+"""
+
+_FRAGMENT5_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order name="existing" based-on="basic">
+ </order>
+ <order name="new" based-on="basic">
+  <viewlet name="two" insert-before="three"/>
+ </order>
+ <order name="wrongbase" based-on="invalid_base_id">
+  <viewlet name="two" insert-before="three"/>
+ </order>
+</object>"""
+
+_FRAGMENT6_IMPORT = """\
+<?xml version="1.0"?>
+ <order name="basic">
+  <viewlet name="one"/>
+ </order>
+ <order name="fancy" remove="True"/>
+ <order name="invalid" remove="True"/>
+</object>
+"""
+
+_FRAGMENT7_IMPORT = """\
 <?xml version="1.0"?>
 <object>
  <order manager="top" skinname="added" make_default="True">
@@ -148,6 +208,11 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
                 self.storage.setHidden(manager, skinname,
                                             hidden[skinname][manager])
 
+    def tearDown(self):
+        sm = getSiteManager(self.site)
+        sm.unregisterUtility(provided=IViewletSettingsStorage)
+        BaseRegistryTests.tearDown(self)
+
 
 class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
@@ -184,7 +249,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     _VIEWLETS_XML = _VIEWLETS_XML
     _EMPTY_EXPORT = _EMPTY_EXPORT
-    _FRAGMENT1_IMPORT = _FRAGMENT1_IMPORT
+    _FRAGMENT7_IMPORT = _FRAGMENT7_IMPORT
 
     def test_default_no_purge(self):
         from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
@@ -214,12 +279,30 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
         self.failIf('default_skin' in utility._hidden.keys())
 
+    def test_normal(self):
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self.site
+        utility = self.storage
+        self.assertEqual(len(utility._order.keys()), 0)
+        self.assertEqual(len(utility._hidden.keys()), 0)
+
+        context = DummyImportContext(site)
+        context._files['viewlets.xml'] = self._VIEWLETS_XML
+        importViewletSettingsStorage(context)
+
+        self.assertEqual(utility.getOrder('top', 'fancy'), ('three', 'two', 'one'))
+        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
+        self.assertEqual(utility.getHidden('top', 'light'), ('one',))
+
     def test_make_default(self):
         from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
+        self.assertEqual(len(utility._order.keys()), 3)
+        self.assertEqual(len(utility._hidden.keys()), 3)
 
         site = self.site
         utility = self.storage
@@ -229,13 +312,22 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'undefined'), ())
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
+        context._files['viewlets.xml'] = self._FRAGMENT7_IMPORT
         importViewletSettingsStorage(context)
 
         self.assertEqual(utility.getOrder('top', 'undefined'),
                     ('one', 'two', 'three'))
         self.assertEqual(utility.getHidden('top', 'undefined'),
                                                     ('one',))
+
+    def test_z_means_last(self):
+        from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+
+        site = self.site
+        utility = self.storage
+        # Make sure we have nothing in the utility
+        self.assertEqual(len(utility._order.keys()), 0)
+        self.assertEqual(len(utility._hidden.keys()), 0)
 
 def test_suite():
     from unittest import TestSuite, makeSuite
