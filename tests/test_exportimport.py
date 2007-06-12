@@ -301,11 +301,11 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
-        self.assertEqual(len(utility._order.keys()), 3)
-        self.assertEqual(len(utility._hidden.keys()), 3)
 
         site = self.site
         utility = self.storage
+        self.assertEqual(len(utility._order.keys()), 3)
+        self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'undefined'),
                     ('two', 'three', 'one'))
