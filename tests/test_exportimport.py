@@ -9,12 +9,6 @@ from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
 
-from Products.CMFCore.interfaces import ISkinsTool
-from Products.CMFCore.exportimport.tests.test_skins import DummySkinsTool
-from Products.CMFCore.exportimport.tests.test_skins import DummySite
-from Products.CMFCore.testing import ExportImportZCMLLayer
-
-from Products.CMFPlone.tests import PloneTestCase
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.CMFPlone.setuphandlers import PloneGenerator
 
