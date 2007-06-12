@@ -5,7 +5,6 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 
-
 def importViewletSettingsStorage(context):
     """Import viewlet settings."""
     logger = context.getLogger('plone.app.viewletmanager')
@@ -85,11 +84,106 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 continue
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
-            values = []
-            for value in child.childNodes:
-                if value.nodeName == 'viewlet':
-                    values.append(value.getAttribute('name'))
-            if child.nodeName == 'order':
-                storage.setOrder(manager, skinname, tuple(values))
-            elif child.nodeName == 'hidden':
-                storage.setHidden(manager, skinname, tuple(values))
+            if skinname == '*':
+                for skinname in getattr(storage, '_'+child.nodeName).keys():
+                    values = []
+                    if child.nodeName == 'order':
+                        try:
+                            values = list(storage._order[skinname][manager])
+                        except KeyError:
+                            pass
+                        values = self._updateValues(values, child)
+                        storage.setOrder(manager, skinname, tuple(values))
+                    elif child.nodeName == 'hidden':
+                        try:
+                            values = list(storage._hidden[skinname][manager])
+                        except KeyError:
+                            pass
+                        values = self._updateValues(values, child)
+                        storage.setHidden(manager, skinname, tuple(values))
+            else:
+                values = []
+                if child.nodeName == 'order':
+                    basename = skinname
+                    if child.hasAttribute('based-on'):
+                        basename = child.getAttribute('based-on')
+                    try:
+                        values = list(storage._order[basename][manager])
+                    except KeyError:
+                        pass
+                    for value in values:
+                        if value not in values:
+                            viewletnode = self._doc.createElement('viewlet')
+                            viewletnode.setAttribute('name', value)
+                            if values.index(value) == 0:
+                                viewletnode.setAttribute('insert-before', '*')
+                            else:
+                                pos = values[values.index(value)-1]
+                                viewletnode.setAttribute('insert-after', pos)
+                            child.appendChild(viewletnode)
+                    values = self._updateValues(values, child)
+                    storage.setOrder(manager, skinname, tuple(values))
+
+                elif child.nodeName == 'hidden':
+                    basename = skinname
+                    if child.hasAttribute('based-on'):
+                        basename = child.getAttribute('based-on')
+                    try:
+                        values = list(storage._hidden[basename][manager])
+                    except KeyError:
+                        pass
+                    for value in values:
+                        if value not in values:
+                            viewletnode = self._doc.createElement('viewlet')
+                            viewletnode.setAttribute('name', value)
+                            if values.index(value) == 0:
+                                viewletnode.setAttribute('insert-before', '*')
+                            else:
+                                pos = values[values.index(value)-1]
+                                viewletnode.setAttribute('insert-after', pos)
+                            child.appendChild(viewletnode)
+                    values = self._updateValues(values, child)
+                    storage.setHidden(manager, skinname, tuple(values))
+
+                if child.hasAttribute('make_default'):
+                    make_default = self._convertToBoolean(
+                                        child.getAttribute('make_default'))
+                    if make_default == True:
+                        storage.setDefault(manager, skinname)
+
+    def _updateValues(self, values, node):
+        for child in node.childNodes:
+            if child.nodeName != 'viewlet':
+                continue
+            viewlet_name = child.getAttribute('name')
+            if viewlet_name in values:
+                values.remove(viewlet_name)
+
+            if child.hasAttribute('insert-before'):
+                insert_before = child.getAttribute('insert-before')
+                if insert_before == '*':
+                    values.insert(0, viewlet_name)
+                    continue
+                else:
+                    try:
+                        index = values.index(insert_before)
+                        values.insert(index, viewlet_name)
+                        continue
+                    except ValueError:
+                        pass
+            elif child.hasAttribute('insert-after'):
+                insert_after = child.getAttribute('insert-after')
+                if insert_after == '*':
+                    pass
+                else:
+                    try:
+                        index = values.index(insert_after)
+                        values.insert(index+1, viewlet_name)
+                        continue
+                    except ValueError:
+                        pass
+
+            if not child.hasAttribute('remove'):
+                values.append(viewlet_name)
+
+        return values

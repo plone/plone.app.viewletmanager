@@ -117,13 +117,18 @@ Now we should be able to change the order by setting it in the storage.
     >>> manager.render()
     u'third\nfirst\nsecond'
 
-If we change the skin, the original order should apply.
+The default skin should now be that same one for that manager.
+
+    >>> storage.getDefault('left')
+    'Plone Default'
+
+If we change the skin, the default order should apply.
 
     >>> content.skin = 'MySkin'
 
     >>> manager.update()
     >>> manager.render()
-    u'first\nsecond\nthird'
+    u'third\nfirst\nsecond'
 
     >>> del content.skin
 
