@@ -117,11 +117,10 @@ Now we should be able to change the order by setting it in the storage.
     >>> manager.render()
     u'third\nfirst\nsecond'
 
-The default order should now be the same as the first one that was edited.
+The default skin should now be that same one for that manager.
 
-    >>> from plone.app.viewletmanager.storage import DEFAULT_SKINKEY
-    >>> storage.getOrder('left', DEFAULT_SKINKEY)
-    ('third', 'first', 'second')
+    >>> storage.getDefault('left')
+    'Plone Default'
 
 If we change the skin, the default order should apply.
 

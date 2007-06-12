@@ -5,50 +5,46 @@ from persistent.dict import PersistentDict
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 
-DEFAULT_SKINKEY = 'default_skin'
-DEFAULT_SKINNAME = 'Plone Default'
-
 class ViewletSettingsStorage(Persistent):
     implements(IViewletSettingsStorage)
 
     def __init__(self):
         self._order = PersistentDict()
         self._hidden = PersistentDict()
+        self._defaults = PersistentDict()
 
     def getOrder(self, name, skinname):
         skin = self._order.get(skinname, {})
         order = skin.get(name, ())
         if not order:
-            skin = self._order.get(DEFAULT_SKINKEY, {})
-            order = skin.get(name, ())
-        if not order:
-            skin = self._order.get(DEFAULT_SKINNAME, {})
-            order = skin.get(name, ())
+            skinname = self.getDefault(name)
+            if skinname is not None:
+                skin = self._order.get(skinname, {})
+                order = skin.get(name, ())
         return order
-
-    def setDefaultOrder(self, name, order):
-        self.setOrder(name, DEFAULT_SKINKEY, order)
 
     def setOrder(self, name, skinname, order):
         skin = self._order.setdefault(skinname, PersistentDict())
         skin[name] = tuple(order)
-        if not self.getOrder(name, DEFAULT_SKINKEY):
-            self.setDefaultOrder(name, order)
+        if self.getDefault(name) is None:
+            self.setDefault(name, skinname)
 
     def getHidden(self, name, skinname):
         skin = self._hidden.get(skinname, {})
-        order = skin.get(name, ())
-        if not order:
-            skin = self._hidden.get(DEFAULT_SKINKEY, {})
-            order = skin.get(name, ())
-        if not order:
-            skin = self._hidden.get(DEFAULT_SKINNAME, {})
-            order = skin.get(name, ())
-        return order
-
-    def setDefaultHidden(self, name, hidden):
-        self.setHidden(name, DEFAULT_SKINKEY, hidden)
+        hidden = skin.get(name, ())
+        if not hidden:
+            skinname = self.getDefault(name)
+            if skinname is not None:
+                skin = self._hidden.get(skinname, {})
+                hidden = skin.get(name, ())
+        return hidden
 
     def setHidden(self, name, skinname, hidden):
         skin = self._hidden.setdefault(skinname, PersistentDict())
         skin[name] = tuple(hidden)
+
+    def getDefault(self, name):
+        return self._defaults.get(name)
+
+    def setDefault(self, name, skinname):
+        self._defaults[name] = skinname
