@@ -47,7 +47,13 @@ class ViewletSettingsStorage(Persistent):
         try:
             return self._defaults.get(name)
         except AttributeError:  # Backward compatibility
-            return 'Plone Default'
+            self._defaults = PersistentDict()
+            self.setDefault(name, 'Plone Default')
+            return self.getDefault(name)
 
     def setDefault(self, name, skinname):
-        self._defaults[name] = skinname
+        try:
+            self._defaults[name] = skinname
+        except AttributeError:  # Backward compatibility
+            self._defaults = PersistentDict()
+            self.setDefault(name, skinname)

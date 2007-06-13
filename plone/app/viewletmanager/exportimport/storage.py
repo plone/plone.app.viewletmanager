@@ -1,5 +1,3 @@
-from persistent.dict import PersistentDict
-
 from zope.component import getUtility, queryUtility, queryMultiAdapter
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
