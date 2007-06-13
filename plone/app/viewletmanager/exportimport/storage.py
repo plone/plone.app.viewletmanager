@@ -98,14 +98,18 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                     values = list(skins[basename][manager])
                 except KeyError:
                     values = []
-                for value in values:
+                try:
+                    oldvalues = skins[skinname][manager]
+                except KeyError:
+                    oldvalues = []
+                for value in oldvalues:
                     if value not in values:
                         viewletnode = self._doc.createElement('viewlet')
                         viewletnode.setAttribute('name', value)
-                        if values.index(value) == 0:
+                        if oldvalues.index(value) == 0:
                             viewletnode.setAttribute('insert-before', '*')
                         else:
-                            pos = values[values.index(value)-1]
+                            pos = oldvalues[oldvalues.index(value)-1]
                             viewletnode.setAttribute('insert-after', pos)
                         child.appendChild(viewletnode)
                 values = self._updateValues(values, child)
