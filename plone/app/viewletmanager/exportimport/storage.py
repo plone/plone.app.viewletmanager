@@ -79,8 +79,8 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 continue
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
+            skins = getattr(storage, '_'+nodename)
             if skinname == '*':
-                skins = getattr(storage, '_'+nodename)
                 for skinname in skins:
                     try:
                         values = list(skins[skinname][manager])
@@ -93,7 +93,6 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                         storage.setHidden(manager, skinname, tuple(values))
 
             else:
-                skins = getattr(storage, '_'+nodename)
                 basename = skinname
                 if child.hasAttribute('based-on'):
                     basename = child.getAttribute('based-on')
