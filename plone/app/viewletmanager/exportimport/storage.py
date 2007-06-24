@@ -92,7 +92,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                     values = []
                     if not purgeChild:
                         values = list(skins[skinname].get(manager, []))
-                    values = self._updateValues(values, child)
+                    values = self._computeValues(values, child)
                     if nodename == 'order':
                         storage.setOrder(manager, skinname, tuple(values))
                     elif nodename == 'hidden':
@@ -116,7 +116,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                                 pos = oldvalues[oldvalues.index(value)-1]
                                 viewlet.setAttribute('insert-after', pos)
                             child.appendChild(viewlet)
-                values = self._updateValues(values, child)
+                values = self._computeValues(values, child)
                 if nodename == 'order':
                     storage.setOrder(manager, skinname, tuple(values))
                 elif nodename == 'hidden':
@@ -135,7 +135,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         for key in storage._hidden:
             storage._hidden[key].clear()
 
-    def _updateValues(self, values, node):
+    def _computeValues(self, values, node):
         for child in node.childNodes:
             if child.nodeName != 'viewlet':
                 continue
