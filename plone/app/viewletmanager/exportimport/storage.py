@@ -1,3 +1,4 @@
+from persistent.dict import PersistentDict
 from zope.component import getUtility, queryUtility, queryMultiAdapter
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
@@ -70,20 +71,31 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         """
         Import the object from the DOM node.
         """
-        storage = getUtility(IViewletSettingsStorage)
+        storage = self.context
+        purge = self.environ.shouldPurge()
+        if node.getAttribute('purge'):
+            purge = self._convertToBoolean(node.getAttribute('purge'))
+        if purge:
+            self._purgeDicts()
         for child in node.childNodes:
             nodename = child.nodeName
             if nodename not in ('order', 'hidden'):
                 continue
+            purgeChild = False
+            if child.getAttribute('purge'):
+                purgeChild = self._convertToBoolean(
+                                                  child.getAttribute('purge'))
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
             skins = getattr(storage, '_'+nodename)
             if skinname == '*':
                 for skinname in skins:
-                    try:
-                        values = list(skins[skinname][manager])
-                    except KeyError:
-                        values = []
+                    values = []
+                    if not purgeChild:
+                        try:
+                            values = list(skins[skinname][manager])
+                        except KeyError:
+                            pass
                     values = self._updateValues(values, child)
                     if nodename == 'order':
                         storage.setOrder(manager, skinname, tuple(values))
@@ -91,27 +103,30 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                         storage.setHidden(manager, skinname, tuple(values))
 
             else:
-                basename = skinname
-                if child.hasAttribute('based-on'):
-                    basename = child.getAttribute('based-on')
-                try:
-                    values = list(skins[basename][manager])
-                except KeyError:
-                    values = []
-                try:
-                    oldvalues = skins[skinname][manager]
-                except KeyError:
-                    oldvalues = []
-                for value in oldvalues:
-                    if value not in values:
-                        viewletnode = self._doc.createElement('viewlet')
-                        viewletnode.setAttribute('name', value)
-                        if oldvalues.index(value) == 0:
-                            viewletnode.setAttribute('insert-before', '*')
-                        else:
-                            pos = oldvalues[oldvalues.index(value)-1]
-                            viewletnode.setAttribute('insert-after', pos)
-                        child.appendChild(viewletnode)
+                values = []
+                if not purgeChild:
+                    basename = skinname
+                    if child.hasAttribute('based-on'):
+                        basename = child.getAttribute('based-on')
+                    try:
+                        values = list(skins[basename][manager])
+                    except KeyError:
+                        pass
+                    if skinname in skins and child.hasAttribute('based-on'):
+                        try:
+                            oldvalues = list(skins[skinname][manager])
+                        except KeyError:
+                            pass
+                        for value in oldvalues:
+                            if value not in values:
+                                viewlet = self._doc.createElement('viewlet')
+                                viewlet.setAttribute('name', value)
+                                if oldvalues.index(value) == 0:
+                                    viewlet.setAttribute('insert-before', '*')
+                                else:
+                                    pos = oldvalues[oldvalues.index(value)-1]
+                                    viewlet.setAttribute('insert-after', pos)
+                                child.appendChild(viewlet)
                 values = self._updateValues(values, child)
                 if nodename == 'order':
                     storage.setOrder(manager, skinname, tuple(values))
@@ -123,6 +138,13 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                                         child.getAttribute('make_default'))
                     if make_default == True:
                         storage.setDefault(manager, skinname)
+
+    def _purgeDicts(self):
+        storage = self.context
+        for key in storage._order:
+            storage._order[key].clear()
+        for key in storage._hidden:
+            storage._hidden[key].clear()
 
     def _updateValues(self, values, node):
         for child in node.childNodes:
@@ -160,3 +182,4 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 values.append(viewlet_name)
 
         return values
+        
