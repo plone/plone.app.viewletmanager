@@ -51,10 +51,9 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         """
         Export the object as a DOM node.
         """
-        storage = getUtility(IViewletSettingsStorage)
         output = self._doc.createElement('object')
         for nodename in ('order', 'hidden'):
-            skins = getattr(storage, '_'+nodename)
+            skins = getattr(self.context, '_'+nodename)
             for skin in skins:
                 for name in skins[skin]:
                     node = self._doc.createElement(nodename)
@@ -76,7 +75,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         if node.getAttribute('purge'):
             purge = self._convertToBoolean(node.getAttribute('purge'))
         if purge:
-            self._purgeDicts()
+            self._purgeViewletSettings()
         for child in node.childNodes:
             nodename = child.nodeName
             if nodename not in ('order', 'hidden'):
@@ -129,7 +128,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                     if make_default == True:
                         storage.setDefault(manager, skinname)
 
-    def _purgeDicts(self):
+    def _purgeViewletSettings(self):
         storage = self.context
         for key in storage._order:
             storage._order[key].clear()
