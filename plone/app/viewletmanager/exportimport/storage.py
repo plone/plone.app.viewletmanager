@@ -78,52 +78,56 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         if purge:
             self._purgeDicts()
         for child in node.childNodes:
-            if child.getAttribute('skinname') == '*':
+            nodename = child.nodeName
+            if nodename not in ('order', 'hidden'):
+                continue
+            purgeChild = False
+            if child.getAttribute('purge'):
+                purgeChild = self._convertToBoolean(
+                                                  child.getAttribute('purge'))
+            skinname = child.getAttribute('skinname')
+            manager = child.getAttribute('manager')
+            skins = getattr(storage, '_'+nodename)
+            if skinname == '*':
                 for skinname in skins:
-                    self._setValues(child)
+                    values = []
+                    if not purgeChild:
+                        values = list(skins[skinname].get(manager, []))
+                    values = self._updateValues(values, child)
+                    if nodename == 'order':
+                        storage.setOrder(manager, skinname, tuple(values))
+                    elif nodename == 'hidden':
+                        storage.setHidden(manager, skinname, tuple(values))
 
             else:
-                self._setValues(child)
+                values = []
+                if skinname in skins and not purgeChild:
+                    values = list(skins[skinname].get(manager, []))
+                basename = child.getAttribute('based-on')
+                if basename in skins:
+                    oldvalues = values
+                    values = list(skins[basename].get(manager, []))
+                    for value in oldvalues:
+                        if value not in values:
+                            viewlet = self._doc.createElement('viewlet')
+                            viewlet.setAttribute('name', value)
+                            if oldvalues.index(value) == 0:
+                                viewlet.setAttribute('insert-before', '*')
+                            else:
+                                pos = oldvalues[oldvalues.index(value)-1]
+                                viewlet.setAttribute('insert-after', pos)
+                            child.appendChild(viewlet)
+                values = self._updateValues(values, child)
+                if nodename == 'order':
+                    storage.setOrder(manager, skinname, tuple(values))
+                elif nodename == 'hidden':
+                    storage.setHidden(manager, skinname, tuple(values))
 
-    def _setValues(self, child):
-        nodename = child.nodeName
-        if nodename not in ('order', 'hidden'):
-            continue
-        purgeChild = False
-        if child.getAttribute('purge'):
-            purgeChild = self._convertToBoolean(
-                                              child.getAttribute('purge'))
-        skinname = child.getAttribute('skinname')
-        manager = child.getAttribute('manager')
-        skins = getattr(storage, '_'+nodename)
-        values = []
-        if skinname in skins and not purgeChild:
-            values = list(skins[skinname].get(manager, []))
-        basename = child.getAttribute('based-on')
-        if basename in skins:
-            oldvalues = values
-            values = list(skins[basename].get(manager, []))
-            for value in oldvalues:
-                if value not in values:
-                    viewlet = self._doc.createElement('viewlet')
-                    viewlet.setAttribute('name', value)
-                    if oldvalues.index(value) == 0:
-                        viewlet.setAttribute('insert-before', '*')
-                    else:
-                        pos = oldvalues[oldvalues.index(value)-1]
-                        viewlet.setAttribute('insert-after', pos)
-                    child.appendChild(viewlet)
-        values = self._updateValues(values, child)
-        if nodename == 'order':
-            storage.setOrder(manager, skinname, tuple(values))
-        elif nodename == 'hidden':
-            storage.setHidden(manager, skinname, tuple(values))
-
-        if child.hasAttribute('make_default'):
-            make_default = self._convertToBoolean(
-                                child.getAttribute('make_default'))
-            if make_default == True:
-                storage.setDefault(manager, skinname)
+                if child.hasAttribute('make_default'):
+                    make_default = self._convertToBoolean(
+                                        child.getAttribute('make_default'))
+                    if make_default == True:
+                        storage.setDefault(manager, skinname)
 
     def _purgeDicts(self):
         storage = self.context
