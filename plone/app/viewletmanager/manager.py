@@ -16,9 +16,8 @@ from plone.app.viewletmanager.interfaces import IViewletManagementView
 from cgi import parse_qs
 from urllib import urlencode
 
-class OrderedViewletManager(object):
-    manager_template = ViewPageTemplateFile('manage-viewletmanager.pt')
 
+class BaseOrderedViewletManager(object):
     def filter(self, viewlets):
         """Filter the viewlets.
     
@@ -71,6 +70,16 @@ class OrderedViewletManager(object):
 
         # return both together
         return result + remaining
+
+    def render(self):
+        if self.template:
+            return self.template(viewlets=self.viewlets)
+        else:
+            return u'\n'.join([viewlet.render() for viewlet in self.viewlets])
+
+
+class OrderedViewletManager(BaseOrderedViewletManager):
+    manager_template = ViewPageTemplateFile('manage-viewletmanager.pt')
 
     def render(self):
         """See zope.contentprovider.interfaces.IContentProvider"""
@@ -134,10 +143,8 @@ class OrderedViewletManager(object):
             # and output them
             return self.manager_template(viewlets=results)
         # the rest is standard behaviour from zope.viewlet
-        elif self.template:
-            return self.template(viewlets=self.viewlets)
         else:
-            return u'\n'.join([viewlet.render() for viewlet in self.viewlets])
+            return BaseOrderedViewletManager.render(self)
 
 
 class ManageViewlets(BrowserView):
