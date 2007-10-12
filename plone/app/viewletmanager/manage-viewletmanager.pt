@@ -1,6 +1,7 @@
 <dl class="portlet notify">
     <dt class="portletHeader">
         ViewletManager: <span tal:content="view/name">ViewletManager name</span>
+        (<span tal:content="view/interface" />)
     </dt>
     <dd class="portletItem">
         <dl class="portlet"

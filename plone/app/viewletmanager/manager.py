@@ -5,6 +5,8 @@ from zope.component import getMultiAdapter, queryMultiAdapter
 from zope.viewlet.interfaces import IViewlet
 from zope.contentprovider.interfaces import IContentProvider
 
+from zope.interface import providedBy
+
 from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
 from Products.Five import BrowserView
@@ -140,6 +142,8 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 results.append(options)
 
             self.name = self.__name__
+            self.interface = list(providedBy(self).flattened())[0].__identifier__
+            
             # and output them
             return self.manager_template(viewlets=results)
         # the rest is standard behaviour from zope.viewlet
