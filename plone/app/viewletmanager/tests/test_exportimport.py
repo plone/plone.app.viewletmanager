@@ -12,32 +12,27 @@ from Products.GenericSetup.tests.common import DummyImportContext
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.CMFPlone.setuphandlers import PloneGenerator
 
-from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
-from plone.app.viewletmanager.storage import ViewletSettingsStorage
+from marsapp.categories.storage import IMarscatsSettingsStorage
+from marsapp.categories.storage import MarscatsSettingsStorage
 
-COMMON_SETUP_ORDER = {
-    'basic': {'top': ('one',)},
-    'fancy': {'top': ('two', 'three', 'one')},
+COMMON_SETUP = {
+    'one': {'portal_types': {'my_content': 'cat-one',
+                             'other_content': '',
+                             },
+            },
+    'two': {'startup_directory': 'cat-two',},
     }
 
-COMMON_SETUP_HIDDEN = {
-    'light': {'top': ('two',)},
-    }
-
-_VIEWLETS_XML = """\
+_MARSCATS_XML = """\
 <?xml version="1.0"?>
 <object>
- <order manager="top" skinname="fancy">
-  <viewlet name="two"/>
-  <viewlet name="three"/>
-  <viewlet name="one"/>
- </order>
- <order manager="top" skinname="basic">
-  <viewlet name="one"/>
- </order>
- <hidden manager="top" skinname="light">
-  <viewlet name="two"/>
- </hidden>
+ <field name="two" startup_directory="cat-two"/>
+ <field name="one">
+  <portal_types>
+   <portal_type name="my_content" startup_directory="cat-one"/>
+   <portal_type name="other_content"/>
+  </portal_types>
+ </field>
 </object>
 """
 
@@ -49,8 +44,16 @@ _EMPTY_EXPORT = """\
 _CHILD_PURGE_IMPORT = """\
 <?xml version="1.0"?>
 <object>
- <order manager="top" skinname="fancy" purge="True" />
- <hidden manager="top" skinname="light" purge="True" />
+ <field name="one" purge="true"/>
+</object>
+"""
+
+_TYPESCHILD_PURGE_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <field name="one">
+  <portal_types purge="true"/>
+ </field>
 </object>
 """
 
@@ -64,100 +67,53 @@ _FRAGMENT1_IMPORT = """\
 </object>
 """
 
-_FRAGMENT2_IMPORT = """\
-<?xml version="1.0"?>
-<object>
- <order manager="top" skinname="*">
-  <viewlet name="four" insert-after="three"/>
- </order>
-</object>
-"""
-
-_FRAGMENT3_IMPORT = """\
-<?xml version="1.0"?>
-<object>
- <order manager="top" skinname="*">
-  <viewlet name="three" insert-before="*"/>
-  <viewlet name="four" insert-after="*"/>
- </order>
-</object>
-"""
-
-_FRAGMENT4_IMPORT = """\
-<?xml version="1.0"?>
-<object>
- <order manager="top" skinname="*">
-  <viewlet name="three" remove="1"/>
- </order>
-</object>
-"""
-
-_FRAGMENT5_IMPORT = """\
-<?xml version="1.0"?>
-<object>
- <order manager='top' skinname="existing" based-on="fancy">
- </order>
- <order manager='top' skinname="new" based-on="fancy">
-  <viewlet name="three" insert-before="two"/>
- </order>
- <order manager='top' skinname="wrongbase" based-on="invalid_base_id">
-  <viewlet name="two"/>
- </order>
-</object>"""
-
-_FRAGMENT6_IMPORT = """\
-<?xml version="1.0"?>
-<object>
- <order manager="top" skinname="added" make_default="True">
-  <viewlet name="one"/>
-  <viewlet name="two"/>
-  <viewlet name="three"/>
- </order>
- <hidden manager="top" skinname="added" make_default="True">
-  <viewlet name="two"/>
- </hidden>
-</object>
-"""
-
 class Layer:
     @classmethod
     def setUp(cls):
         from zope.component import provideAdapter
         
-        from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
+        from marsapp.categories.exportimport.storage import MarscatsSettingsStorageNodeAdapter
         from Products.GenericSetup.interfaces import IBody
-        from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+        from marsapp.categories.storage import IMarscatsSettingsStorage
         from Products.GenericSetup.interfaces import ISetupEnviron
         
-        provideAdapter(factory=ViewletSettingsStorageNodeAdapter, 
-            adapts=(IViewletSettingsStorage, ISetupEnviron),
+        provideAdapter(factory=MarscatsSettingsStorageNodeAdapter, 
+            adapts=(IMarscatsSettingsStorage, ISetupEnviron),
             provides=IBody)
 
-class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
+class MarscatsSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
     
     layer = Layer
 
     def _getTargetClass(self):
-        from plone.app.viewletmanager.exportimport.storage \
-                    import ViewletSettingsStorageNodeAdapter
-        return ViewletSettingsStorageNodeAdapter
+        from marsapp.categories.exportimport.storage \
+                    import MarscatsSettingsStorageNodeAdapter
+        return MarscatsSettingsStorageNodeAdapter
 
     def _populate(self, obj):
-        obj.setOrder('top', 'fancy', ('two', 'three', 'one'))
-        obj.setOrder('top', 'basic', ('one',))
-        obj.setHidden('top', 'light', ('two',))
-
+        obj.setStartupDir('one', 'cat-one', 'my_content')
+        obj.setStartupDir('one', '', 'other_content')
+        obj.setStartupDir('two', 'cat-two')
+        
     def _verifyImport(self, obj):
-        fancydict = {'top': ('two', 'three', 'one')}
-        hiddendict = {'top': ('two',)}
-        self.assertEqual(type(obj._order), PersistentDict)
-        self.failUnless('fancy' in obj._order.keys())
-        self.assertEqual(type(obj._order['fancy']), PersistentDict)
-        self.assertEqual(dict(obj._order['fancy']), fancydict)
-        self.assertEqual(type(obj._hidden), PersistentDict)
-        self.failUnless('light' in obj._hidden.keys())
-        self.assertEqual(type(obj._hidden['light']), PersistentDict)
-        self.assertEqual(dict(obj._hidden['light']), hiddendict)
+        one = {'portal_types': {'my_content': 'cat-one',
+                                'other_content': ''},
+               }
+        two = {'startup_directory': 'cat-two'}
+        self.assertEqual(type(obj._fields), PersistentDict)
+        self.failUnless('one' in obj._fields)
+        self.assertEqual(type(obj._fields['one']), PersistentDict)
+        self.failUnless('portal_types' in obj._fields['one'])
+        self.assertEqual(type(obj._fields['one']['portal_types']),
+                         PersistentDict)
+        self.failUnless('my_content' in obj._fields['one']['portal_types'])
+        self.failUnless('other_content' in obj._fields['one']['portal_types'])
+        self.assertEqual(obj._fields['one'], one)
+        self.failUnless('two' in obj._fields)
+        self.assertEqual(type(obj._fields['two']), PersistentDict)
+        self.failUnless('portal_types' not in obj._fields['two'])
+        self.failUnless('startup_directory' in obj._fields['two'])
+        self.assertEqual(obj._fields['two'], two)
 
     def setUp(self):
         setHooks()
@@ -166,13 +122,14 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         gen.enableSite(self.site)
         setSite(self.site)
         sm = getSiteManager()
-        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
+        sm.registerUtility(MarscatsSettingsStorage(),
+                           IMarscatsSettingsStorage)
 
-        self._obj = getUtility(IViewletSettingsStorage)
+        self._obj = getUtility(IMarscatsSettingsStorage)
 
-        self._BODY = _VIEWLETS_XML
+        self._BODY = _MARSCATS_XML
 
-class _ViewletSettingsStorageSetup(BaseRegistryTests):
+class _MarscatsSettingsStorageSetup(BaseRegistryTests):
 
     layer = Layer
 
@@ -185,364 +142,161 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         gen.enableSite(self.site)
         setSite(self.site)
         sm = getSiteManager(self.site)
-        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
-        self.storage = getUtility(IViewletSettingsStorage)
+        sm.registerUtility(MarscatsSettingsStorage(), IMarscatsSettingsStorage)
+        self.storage = getUtility(IMarscatsSettingsStorage)
 
-    def _populateSite(self, order={}, hidden={}):
+    def _populateSite(self, fields={}):
         storage = self.storage
-        for skinname in order.keys():
-            for manager in order[skinname].keys():
-                self.storage.setOrder(manager, skinname,
-                                            order[skinname][manager])
+        for fieldname in fields.keys():
+            field = fields[fieldname]
+            if field.has_key('startup_directory'):
+                storage.setStartupDir(fieldname, field['startup_directory'])
+            if field.has_key('portal_types'):
+                for typename in field['portal_types']:
+                    storage.setStartupDir(fieldname,
+                                          field['portal_types'][typename],
+                                          typename)
 
-        for skinname in hidden.keys():
-            for manager in hidden[skinname].keys():
-                self.storage.setHidden(manager, skinname,
-                                            hidden[skinname][manager])
-
-
-class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+class exportMarscatsSettingsStorageTests(_MarscatsSettingsStorageSetup):
 
     def test_empty(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                exportViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                exportMarscatsSettingsStorage
 
         context = DummyExportContext(self.site)
-        exportViewletSettingsStorage(context)
+        exportMarscatsSettingsStorage(context)
 
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
-        self.assertEqual(filename, 'viewlets.xml')
+        self.assertEqual(filename, 'marscats.xml')
         self._compareDOM(text, _EMPTY_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
     def test_normal(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                exportViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                exportMarscatsSettingsStorage
 
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-        
+        self._populateSite(fields=COMMON_SETUP)
+
         context = DummyExportContext(self.site)
-        exportViewletSettingsStorage(context)
+        exportMarscatsSettingsStorage(context)
 
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
-        self.assertEqual(filename, 'viewlets.xml')
-        self._compareDOM(text, _VIEWLETS_XML)
+        self.assertEqual(filename, 'marscats.xml')
+        self._compareDOM(text, _MARSCATS_XML)
         self.assertEqual(content_type, 'text/xml')
 
 
-class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+class importMarscatsSettingsStorageTests(_MarscatsSettingsStorageSetup):
 
-    _VIEWLETS_XML = _VIEWLETS_XML
-    _EMPTY_EXPORT = _EMPTY_EXPORT
-    _CHILD_PURGE_IMPORT = _CHILD_PURGE_IMPORT
-    _FRAGMENT1_IMPORT = _FRAGMENT1_IMPORT
-    _FRAGMENT2_IMPORT = _FRAGMENT2_IMPORT
-    _FRAGMENT3_IMPORT = _FRAGMENT3_IMPORT
-    _FRAGMENT4_IMPORT = _FRAGMENT4_IMPORT
-    _FRAGMENT5_IMPORT = _FRAGMENT5_IMPORT
-    _FRAGMENT6_IMPORT = _FRAGMENT6_IMPORT
+    _MARSCATS_XML               = _MARSCATS_XML
+    _EMPTY_EXPORT               = _EMPTY_EXPORT
+    _CHILD_PURGE_IMPORT         = _CHILD_PURGE_IMPORT
+    _TYPESCHILD_PURGE_IMPORT    = _TYPESCHILD_PURGE_IMPORT
 
     def test_empty_default_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
 
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
+        _FIELDS = COMMON_SETUP
+        self._populateSite(fields=_FIELDS)
 
-        site = self.site
-        utility = self.storage
+        self.assertEqual(len(self.storage._fields), 2)
+        self.assertEqual(len(self.storage._fields['one']), 1)
+        self.assertEqual(len(self.storage._fields['two']), 1)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
+        context = DummyImportContext(self.site)
+        context._files['marscats.xml'] = self._EMPTY_EXPORT
+        importMarscatsSettingsStorage(context)
 
-        context = DummyImportContext(site)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 0)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
+        self.assertEqual(len(self.storage._fields), 0)
 
     def test_empty_explicit_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
 
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
+        _FIELDS = COMMON_SETUP
+        self._populateSite(fields=_FIELDS)
 
-        site = self.site
-        utility = self.storage
+        context = DummyImportContext(self.site, True)
+        context._files['marscats.xml'] = self._EMPTY_EXPORT
+        importMarscatsSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
+        self.assertEqual(len(self.storage._fields), 0)
 
-        context = DummyImportContext(site, True)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 0)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
 
     def test_empty_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
 
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
+        _FIELDS = COMMON_SETUP
+        self._populateSite(fields=_FIELDS)
 
-        site = self.site
-        utility = self.storage
+        context = DummyImportContext(self.site, False)
+        context._files['marscats.xml'] = self._EMPTY_EXPORT
+        importMarscatsSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
+        self.assertEqual(len(self.storage._fields), 2)
+        self.assertEqual(len(self.storage._fields['one']), 1)
+        self.assertEqual(len(self.storage._fields['two']), 1)
 
     def test_specific_child_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
 
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
+        _FIELDS = COMMON_SETUP
+        self._populateSite(fields=_FIELDS)
 
-        site = self.site
-        utility = self.storage
+        context = DummyImportContext(self.site, False)
+        context._files['marscats.xml'] = self._CHILD_PURGE_IMPORT
+        importMarscatsSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
+        self.assertEqual(len(self.storage._fields), 2)
+        self.assertEqual(len(self.storage._fields['one']), 0)
+        self.assertEqual(len(self.storage._fields['two']), 1)
 
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._CHILD_PURGE_IMPORT
-        importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
+    def test_specific_typeschild_purge(self):
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
+
+        _FIELDS = COMMON_SETUP
+        self._populateSite(fields=_FIELDS)
+
+        self.assertEqual(len(self.storage._fields['one']['portal_types']), 2)
+
+        context = DummyImportContext(self.site, False)
+        context._files['marscats.xml'] = self._TYPESCHILD_PURGE_IMPORT
+        importMarscatsSettingsStorage(context)
+
+        self.assertEqual(len(self.storage._fields), 2)
+        self.assertEqual(len(self.storage._fields['one']), 1)
+        self.assertEqual(len(self.storage._fields['one']['portal_types']), 0)
+        self.assertEqual(len(self.storage._fields['two']), 1)
+
 
     def test_normal(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+        from marsapp.categories.exportimport.storage import \
+                                                importMarscatsSettingsStorage
 
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 0)
-        self.assertEqual(len(utility._hidden.keys()), 0)
+        self.assertEqual(len(self.storage._fields), 0)
 
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._VIEWLETS_XML
-        importViewletSettingsStorage(context)
+        context = DummyImportContext(self.site, False)
+        context._files['marscats.xml'] = self._MARSCATS_XML
+        importMarscatsSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                            ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
+        self.assertEqual(len(self.storage._fields), 2)
+        self.assertEqual(len(self.storage._fields['one']), 1)
+        self.assertEqual(len(self.storage._fields['two']), 1)
 
-    def test_fragment_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
-
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('three', 'two', 'one'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('three', 'four', 'two', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'),
-                                            ('one', 'four'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('four', 'three', 'two', 'one'))
-
-    def test_fragment3_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
-
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT3_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(utility.getOrder('top', 'basic'),
-                                                ('three', 'one', 'four'))
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('three', 'two', 'one', 'four'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-    def test_fragment4_remove(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
-
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT4_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getOrder('top', 'fancy'), ('two', 'one'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-    def test_fragment5_based_on(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
-
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT5_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(len(utility._order.keys()), 5)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'existing'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'new'),
-                                    ('three', 'two', 'one'))
-        self.assertEqual(utility.getOrder('top', 'wrongbase'), ('two',))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-    def test_fragment6_make_default(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
-
-        _ORDER = COMMON_SETUP_ORDER
-        _HIDDEN = COMMON_SETUP_HIDDEN
-        self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
-        site = self.site
-        utility = self.storage
-        self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._hidden.keys()), 1)
-
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one',))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two',))
-
-        context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT6_IMPORT
-        importViewletSettingsStorage(context)
-
-        self.assertEqual(utility.getOrder('top', 'undefined'),
-                                        ('one', 'two', 'three'))
-        self.assertEqual(utility.getHidden('top', 'undefined'), ('two',))
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapterTests))
-    suite.addTest(makeSuite(exportViewletSettingsStorageTests))
-    suite.addTest(makeSuite(importViewletSettingsStorageTests))
+    suite.addTest(makeSuite(MarscatsSettingsStorageXMLAdapterTests))
+    suite.addTest(makeSuite(exportMarscatsSettingsStorageTests))
+    suite.addTest(makeSuite(importMarscatsSettingsStorageTests))
     return suite
 
 if __name__ == '__main__':

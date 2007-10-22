@@ -1,68 +1,63 @@
 
 We just import the storage.
 
-    >>> from plone.app.viewletmanager.storage import ViewletSettingsStorage
-    >>> storage = ViewletSettingsStorage()
+    >>> from marsapp.categories.storage import MarscatsSettingsStorage
+    >>> storage = MarscatsSettingsStorage()
 
-By default there is no order stored in the storage.
+We need to know the name of the categories container.
 
-    >>> storage.getOrder('plone.top', 'Plone Default')
-    ()
+    >>> from marsapp.categories.storage import CAT_CONTAINER
 
-There are also no viewlets which should be hidden stored in the storage.
+We don't have any 'startup_directory' value stored for any field by default.
 
-    >>> storage.getHidden('plone.top', 'Plone Default')
-    ()
+    >>> storage._fields.keys()
+    []
 
-We can now store the order by names of viewlets in the storage.
+But we already have a default value for all fields.
 
-    >>> storage.setOrder('plone.top', 'Plone Default',
-    ...                    ('plone.logo', 'plone.global_tabs'))
+    >>> storage.getStartupDir('my_field', 'my_portal_type') == CAT_CONTAINER
+    True
 
-And it will be returned.
+We can change that value for any field though.
 
-    >>> storage.getOrder('plone.top', 'Plone Default')
-    ('plone.logo', 'plone.global_tabs')
+    >>> storage.setStartupDir('my_field', 'my_category')
+    >>> storage.getStartupDir('my_field')
+    'my_category'
 
-The default skin should now be that same one for that manager.
+It becomes the default value for that field
 
-    >>> storage.getDefault('plone.top')
-    'Plone Default'
+    >>> storage.getStartupDir('my_field', 'my_portal_type')
+    'my_category'
 
-For other skins it would then return the default order.
+We can override that value for any field.
 
-    >>> storage.getOrder('plone.top', 'Undefined')
-    ('plone.logo', 'plone.global_tabs')
+    >>> storage.setStartupDir('my_field', 'my_other_category', 'my_portal_type')
+    >>> storage.getStartupDir('my_field', 'my_portal_type')
+    'my_other_category'
 
-We can still set another default order if needed.
+We still keep the default value for the same field.
 
-    >>> storage.setOrder('plone.top', 'MySkin',
-    ...                    ('plone.global_tabs', 'plone.logo'))
-    >>> storage.setDefault('plone.top', 'MySkin')
-    >>> storage.getOrder('plone.top', 'Undefined')
-    ('plone.global_tabs', 'plone.logo')
+    >>> storage.getStartupDir('my_field', 'any_other_portal_type')
+    'my_category'
 
-The first skin should still render as before.
+    >>> storage.getStartupDir('my_field')
+    'my_category'
 
-    >>> storage.getOrder('plone.top', 'Plone Default')
-    ('plone.logo', 'plone.global_tabs')
-
-For other viewletmanagers it should still return nothing.
-
-    >>> storage.getOrder('plone.bottom', 'Plone Default')
-    ()
+    >>> storage.getStartupDir('my_field')
+    'my_category'
 
 The storage is a utility, so test if it works like that.
 
     >>> import zope.component
-    >>> from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+    >>> from marsapp.categories.storage import IMarscatsSettingsStorage
 
-    >>> zope.component.getUtility(IViewletSettingsStorage)
+    >>> zope.component.getUtility(IMarscatsSettingsStorage)
     Traceback (most recent call last):
         ...
-    ComponentLookupError: (<InterfaceClass plone.app.viewletmanager.interfaces.IViewletSettingsStorage>, '')
+    ComponentLookupError: (<InterfaceClass marsapp.categories.storage.IMarscatsSettingsStorage>, '')
 
-    >>> zope.component.provideUtility(storage, IViewletSettingsStorage)
+    >>> zope.component.provideUtility(storage, IMarscatsSettingsStorage)
 
-    >>> zope.component.getUtility(IViewletSettingsStorage)
-    <plone.app.viewletmanager.storage.ViewletSettingsStorage object at ...>
+    >>> zope.component.getUtility(IMarscatsSettingsStorage)
+    <marsapp.categories.storage.MarscatsSettingsStorage object at ...>
+
