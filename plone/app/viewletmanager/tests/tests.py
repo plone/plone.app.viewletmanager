@@ -13,5 +13,9 @@ def test_suite():
                      tearDown=tearDown,
                      optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
         ),
+        DocFileSuite('manager.txt',
+                     tearDown=tearDown,
+                     optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+        ),
     ))
     return suite
