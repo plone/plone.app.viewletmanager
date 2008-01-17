@@ -1,8 +1,7 @@
-========================
-plone.app.viewletmanager
-========================
+Introduction
+============
 
-by Florian Schulze <fschulze@plonesolutions.com>.
+by Florian Schulze <fschulze@jarn.com>.
 
 This component expects you to register storage.ViewletSettingsStorage as a
 local utility providing IViewletSettingsStorage (CMFPlone does this). The
