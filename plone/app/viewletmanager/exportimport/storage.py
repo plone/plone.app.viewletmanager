@@ -171,4 +171,4 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 values.append(viewlet_name)
 
         return values
-        
+
