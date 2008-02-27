@@ -1,0 +1,16 @@
+Changelog
+=========
+
+1.1 (unreleased)
+----------------
+
+* Fix a syntax error in the export/import code
+  [wichert]
+
+* Add a HISTORY.txt file
+  [wichert]
+
+1.0
+---
+
+* Initial release
