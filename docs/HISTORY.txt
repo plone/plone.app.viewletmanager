@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2 (unreleased)
+----------------
+
+* Separated the base functionality and the parts necessary for TTW
+  customization into two classes, so we can use this manager in the html
+  head.
+  [fschulze]
+
 1.1 (unreleased)
 ----------------
 
