@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2 (unreleased)
+1.2 - 2008.03.09
 ----------------
 
 * Separated the base functionality and the parts necessary for TTW
