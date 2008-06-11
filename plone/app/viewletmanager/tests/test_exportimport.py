@@ -536,6 +536,15 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getOrder('top', 'undefined'),
                                         ('one', 'two', 'three'))
         self.assertEqual(utility.getHidden('top', 'undefined'), ('two',))
+        
+    def test_syntax_error_reporting(self):
+        from plone.app.viewletmanager.exportimport.storage import \
+                                                importViewletSettingsStorage
+        from xml.parsers.expat import ExpatError
+        site = self.site
+        context = DummyImportContext(site, False)
+        context._files['viewlets.xml'] = """<?xml version="1.0"?>\n<"""
+        self.assertRaises(ExpatError, importViewletSettingsStorage, context)
 
 def test_suite():
     from unittest import TestSuite, makeSuite
