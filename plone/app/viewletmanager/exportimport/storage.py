@@ -1,3 +1,5 @@
+import os
+
 from zope.component import getUtility, queryUtility, queryMultiAdapter
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
@@ -20,6 +22,13 @@ def importViewletSettingsStorage(context):
     if importer is None:
         logger.warning("Import adapter missing.")
         return
+        
+    # set filename on importer so that syntax errors can be reported properly
+    try:
+        subdir = context._profile_path
+    except AttributeError:
+        subdir = ''
+    importer.filename = os.path.join( subdir, 'viewlets.xml' )
 
     importer.body = body
     logger.info("Imported.")

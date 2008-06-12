@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.2.1 (unreleased)
+------------------
+
+* Fixed bogus AttributeError masking the real ExpatError on syntax errors in viewlets.xml.
+  (See test in r21161.)
+  [davisagli]
+
 1.2 - 2008.03.09
 ----------------
 
