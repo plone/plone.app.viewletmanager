@@ -1,14 +1,14 @@
 Changelog
 =========
 
-1.2.1 (unreleased)
+1.2.1 - 2008-07-07
 ------------------
 
 * Fixed bogus AttributeError masking the real ExpatError on syntax errors in viewlets.xml.
   (See test in r21161.)
   [davisagli]
 
-1.2 - 2008.03.09
+1.2 - 2008-03-09
 ----------------
 
 * Separated the base functionality and the parts necessary for TTW
