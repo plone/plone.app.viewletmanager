@@ -4,12 +4,16 @@ Changelog
 1.2.2 - Unreleased
 ------------------
 
+* Made the @@manage-viewlets screen use the 'managedPortlet' CSS class instead
+  of 'portlet', so it's more usable with a custom theme.  This closes
+  http://dev.plone.org/plone/ticket/8391
+  [davisagli]
 
 1.2.1 - 2008-07-07
 ------------------
 
-* Fixed bogus AttributeError masking the real ExpatError on syntax errors in viewlets.xml.
-  (See test in r21161.)
+* Fixed bogus AttributeError masking the real ExpatError on syntax errors in
+  viewlets.xml.  (See test in r21161.)
   [davisagli]
 
 1.2 - 2008-03-09
