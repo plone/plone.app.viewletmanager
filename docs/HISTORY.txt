@@ -4,6 +4,9 @@ Changelog
 1.2.2 - Unreleased
 ------------------
 
+* Made the manager code more tolerant and not fail when no storage is found.
+  [hannosch]
+
 * Made the @@manage-viewlets screen use the 'managedPortlet' CSS class instead
   of 'portlet', so it's more usable with a custom theme.  This closes
   http://dev.plone.org/plone/ticket/8391

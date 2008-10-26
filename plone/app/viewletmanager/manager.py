@@ -1,5 +1,5 @@
 from zope.interface import implements
-from zope.component import getUtility, getAdapters
+from zope.component import getUtility, getAdapters, queryUtility
 from zope.component import getMultiAdapter, queryMultiAdapter
 
 from zope.viewlet.interfaces import IViewlet
@@ -29,10 +29,12 @@ class BaseOrderedViewletManager(object):
         viewlets by name from the local utility which implements the
         IViewletSettingsStorage interface.
         """
-        storage = getUtility(IViewletSettingsStorage)
+        results = []
+        storage = queryUtility(IViewletSettingsStorage)
+        if storage is None:
+            return results
         skinname = self.context.getCurrentSkinName()
         hidden = frozenset(storage.getHidden(self.__name__, skinname))
-        results = []
         # Only return visible viewlets accessible to the principal
         # We need to wrap each viewlet in its context to make sure that
         # the object has a real context from which to determine owner
@@ -53,13 +55,14 @@ class BaseOrderedViewletManager(object):
         which implements the IViewletSettingsStorage interface. The remaining
         ones are sorted just like Five does it.
         """
-
-        storage = getUtility(IViewletSettingsStorage)
+        result = []
+        storage = queryUtility(IViewletSettingsStorage)
+        if storage is None:
+            return result
         skinname = self.context.getCurrentSkinName()
         order_by_name = storage.getOrder(self.__name__, skinname)
         # first get the known ones
         name_map = dict(viewlets)
-        result = []
         for name in order_by_name:
             if name in name_map:
                 result.append((name, name_map[name]))
