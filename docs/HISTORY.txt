@@ -4,6 +4,9 @@ Changelog
 1.2.2 - Unreleased
 ------------------
 
+* Specified package dependencies.
+  [hannosch]
+
 * Made the manager code more tolerant and not fail when no storage is found.
   [hannosch]
 

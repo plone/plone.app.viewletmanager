@@ -27,10 +27,23 @@ setup(name='plone.app.viewletmanager',
       namespace_packages = ['plone', 'plone.app'],
       include_package_data=True,
       zip_safe=False,
+      extras_require=dict(
+        test=[
+            'zope.publisher',
+            'zope.testing',
+            'Plone',
+            'Products.PloneTestCase',
+        ]
+      ),
       install_requires=[
         'setuptools',
-# These are not available for Plone 3
-#        "Products.CMFPlone",
-#        "Products.GenericSetup",
+        'zope.component',
+        'zope.contentprovider',
+        'zope.interface',
+        'zope.viewlet',
+        'Products.GenericSetup',
+        'ZODB3',
+        # 'Acquisition',
+        # 'Zope2',
       ],
       )
