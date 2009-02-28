@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.3'
+version = '2.0'
 
 setup(name='plone.app.viewletmanager',
       version=version,
@@ -43,7 +43,7 @@ setup(name='plone.app.viewletmanager',
         'zope.viewlet',
         'Products.GenericSetup',
         'ZODB3',
-        # 'Acquisition',
-        # 'Zope2',
+        'Acquisition',
+        'Zope2',
       ],
       )
