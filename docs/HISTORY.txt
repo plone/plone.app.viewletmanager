@@ -4,6 +4,10 @@ Changelog
 2.0 - Unreleased
 ----------------
 
+
+1.2.2 - 2009-03-07
+------------------
+
 * Specified package dependencies.
   [hannosch]
 
@@ -12,7 +16,7 @@ Changelog
 
 * Made the @@manage-viewlets screen use the 'managedPortlet' CSS class instead
   of 'portlet', so it's more usable with a custom theme.  This closes
-  http://dev.plone.org/plone/ticket/8391
+  http://dev.plone.org/plone/ticket/8391.
   [davisagli]
 
 1.2.1 - 2008-07-07
