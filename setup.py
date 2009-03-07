@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.3'
+version = '1.2.2'
 
 setup(name='plone.app.viewletmanager',
       version=version,
@@ -21,7 +21,7 @@ setup(name='plone.app.viewletmanager',
       keywords='',
       author='Florian Schulze',
       author_email='fschulze@jarn.com',
-      url='https://svn.plone.org/svn/plone/plone.app.viewletmanager',
+      url='http://pypi.python.org/pypi/plone.app.viewletmanager',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages = ['plone', 'plone.app'],
@@ -42,8 +42,5 @@ setup(name='plone.app.viewletmanager',
         'zope.interface',
         'zope.viewlet',
         'Products.GenericSetup',
-        'ZODB3',
-        # 'Acquisition',
-        # 'Zope2',
       ],
       )
