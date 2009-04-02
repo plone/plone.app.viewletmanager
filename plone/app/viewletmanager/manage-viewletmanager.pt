@@ -8,8 +8,8 @@
             tal:repeat="viewlet options/viewlets"
             tal:attributes="class python:'managedPortlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
             <dt class="portletHeader">
-                Viewlet: <span tal:content="viewlet/name">Viewlet name</span>
-                (<span tal:content="viewlet/index">Index</span>)
+                Viewlet: <span tal:replace="viewlet/name">Viewlet name</span>
+                (<span tal:replace="viewlet/index">Index</span>)
                 <a class="up"
                    tal:condition="viewlet/up_url | nothing"
                    tal:attributes="href viewlet/up_url">&uarr;</a>
