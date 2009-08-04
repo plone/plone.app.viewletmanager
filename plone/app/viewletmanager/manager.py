@@ -120,20 +120,16 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 viewlet = viewlet.__of__(viewlet.context)
                 viewlet_id = "%s:%s" % (self.__name__, name)
                 options = {'index': index,
-                           'name': name}
+                           'name': name,
+                           'hidden': name in hidden,
+                           'show_url': query_tmpl % urlencode({'show': viewlet_id}),
+                           'hide_url': query_tmpl % urlencode({'hide': viewlet_id})}
+
                 if guarded_hasattr(viewlet, 'render'):
                     viewlet.update()
                     options['content'] = viewlet.render()
                 else:
                     options['content'] = u""
-                if name in hidden:
-                    options['hidden'] = True
-                    query = {'show': viewlet_id}
-                    options['show_url'] = query_tmpl % urlencode(query)
-                else:
-                    options['hidden'] = False
-                    query = {'hide': viewlet_id}
-                    options['hide_url'] = query_tmpl % urlencode(query)
                 if index > 0:
                     prev_viewlet = viewlets[index-1][0]
                     query = {'move_above': "%s;%s" % (viewlet_id, prev_viewlet)}
@@ -145,8 +141,9 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 results.append(options)
 
             self.name = self.__name__
+            self.normalized_name = self.name.replace('.','-')
             self.interface = list(providedBy(self).flattened())[0].__identifier__
-            
+
             # and output them
             return self.manager_template(viewlets=results)
         # the rest is standard behaviour from zope.viewlet
