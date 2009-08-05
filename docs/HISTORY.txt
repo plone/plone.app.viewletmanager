@@ -4,6 +4,10 @@ Changelog
 2.0 - Unreleased
 ----------------
 
+* Use JS calls to handle show/hide/move actions instead of forcing a page
+  reload. Will fall back to old method if JavaScript is not available.
+  [esteele]
+
 
 1.2.2 - 2009-03-07
 ------------------
