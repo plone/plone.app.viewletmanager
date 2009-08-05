@@ -5,39 +5,10 @@
       lang="en"
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
-
-      <metal:css_slot fill-slot="css_slot">
-            <style type="text/css" media="screen">
-                .viewlet > dt > a.show { display: none; }
-                .viewlet > dt > a.hide { display: inline; }
-                .viewlet.hiddenViewlet > dt > a.hide{ display:none; }
-                .viewlet.hiddenViewlet > dt > a.show { display: inline; }
-            </style>
-      </metal:css_slot>
-      
-      <metal:javascript_head_slot fill-slot="javascript_head_slot">
-          <script type="text/javascript" charset="utf-8">
-              jq(document).ready(function() {
-                registerClickEvents();
-              });
-
-              function registerClickEvents(){
-                  jq('.up, .down, .hide, .show').click(function () { 
-                        url = jq(this).attr('href');
-                        vm = jq(this).parents().filter('.viewletmanager').get(0);
-                        jq(vm).load(url + ' #' + jq(vm).attr('id') + '.viewletmanager > dl',
-                                    '',
-                                    function(){registerClickEvents();}
-                                    );
-                        return false;
-                    });
-                }
-          </script>
-      </metal:javascript_head_slot>
-
-
 <body>
+
 <metal:main fill-slot="main">
+
     <div tal:replace="structure provider:plone.abovecontenttitle" />
 
     <h1 class="documentFirstHeading"
