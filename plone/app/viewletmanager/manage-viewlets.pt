@@ -12,14 +12,16 @@
                 .viewlet > dt > a.hide { display: inline; }
                 .viewlet.hiddenViewlet > dt > a.hide{ display:none; }
                 .viewlet.hiddenViewlet > dt > a.show { display: inline; }
-                .viewletContent { display: none; }
+                a.toggleContent { width: 9px; height: 9px; background: url(treeCollapsed.png) no-repeat; border: none; display:inline-block}
             </style>
       </metal:css_slot>
       
       <metal:javascript_head_slot fill-slot="javascript_head_slot">
           <script type="text/javascript" charset="utf-8">
               jq(document).ready(function() {
-                registerClickEvents();
+                  jq('dl.viewlet > dt').prepend('<a class="toggleContent" />');
+                  jq('div.viewletContent').hide();
+                  registerClickEvents();
               });
 
               function registerClickEvents(){
@@ -29,6 +31,10 @@
                         jq(vm).load(url + ' #' + jq(vm).attr('id') + '.managedViewlets > dl','',function(){registerClickEvents();});
                         return false;
                     });
+                  jq('.toggleContent').click(function () {
+                        vlt = jq(this).parents().filter('dl.viewlet').get(0);
+                        jq(vlt).find('dd > div.viewletContent').toggle();
+                  });
                 }
           </script>
       </metal:javascript_head_slot>
