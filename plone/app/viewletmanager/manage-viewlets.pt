@@ -12,6 +12,7 @@
                 .viewlet > dt > a.hide { display: inline; }
                 .viewlet.hiddenViewlet > dt > a.hide{ display:none; }
                 .viewlet.hiddenViewlet > dt > a.show { display: inline; }
+                .viewletContent { display: none; }
             </style>
       </metal:css_slot>
       
