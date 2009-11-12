@@ -4,13 +4,13 @@ from persistent.dict import PersistentDict
 from zope.component import getUtility
 from zope.component import getSiteManager
 from zope.app.component.hooks import setHooks, setSite
+from five.localsitemanager import make_objectmanager_site
 
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
 
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
-from Products.CMFPlone.setuphandlers import PloneGenerator
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
@@ -162,8 +162,7 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
     def setUp(self):
         setHooks()
         self.site = Folder('site')
-        gen = PloneGenerator()
-        gen.enableSite(self.site)
+        make_objectmanager_site(self.site)
         setSite(self.site)
         sm = getSiteManager()
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
@@ -181,8 +180,7 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         setHooks()
         self.root.site = Folder(id='site')
         self.site = self.root.site
-        gen = PloneGenerator()
-        gen.enableSite(self.site)
+        make_objectmanager_site(self.site)
         setSite(self.site)
         sm = getSiteManager(self.site)
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
