@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
-import os
 
-version = '2.0'
+version = '2.0a1'
 
 setup(name='plone.app.viewletmanager',
       version=version,
       description="configurable viewlet manager",
       long_description=open("README.txt").read() + "\n" + \
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+                       open("CHANGES.txt").read(),
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Framework :: Plone",
@@ -16,7 +15,6 @@ setup(name='plone.app.viewletmanager',
           "License :: OSI Approved :: GNU General Public License (GPL)",
           "Operating System :: OS Independent",
           "Programming Language :: Python",
-          "Topic :: Software Development :: Libraries :: Python Modules",
           ],
       keywords='',
       author='Florian Schulze',
