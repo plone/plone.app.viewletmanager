@@ -19,10 +19,10 @@
                        tal:attributes="href viewlet/down_url">&darr;</a>
                     <a class="hide"
                        i18n:translate="label_hide_item"
-                       tal:attributes="href viewlet/hide_url">hide</a>
+                       tal:attributes="href viewlet/hide_url">Hide</a>
                     <a class="show"
                        i18n:translate="label_show_item"
-                       tal:attributes="href viewlet/show_url">show</a>
+                       tal:attributes="href viewlet/show_url">Show</a>
                 </dt>
                 <dd class="portletItem">
                     <div tal:replace="structure viewlet/content"></div>
