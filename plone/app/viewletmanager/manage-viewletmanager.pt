@@ -1,4 +1,5 @@
-<div class="managedViewlets" tal:attributes="id view/normalized_name">
+<div class="managedViewlets" tal:attributes="id view/normalized_name"
+     i18n:domain="plone">
     <dl class="managedPortlet notify">
         <dt class="portletHeader">
             ViewletManager: <span tal:content="view/name">ViewletManager name</span>
@@ -17,8 +18,10 @@
                        tal:condition="viewlet/down_url | nothing"
                        tal:attributes="href viewlet/down_url">&darr;</a>
                     <a class="hide"
+                       i18n:translate="label_hide_item"
                        tal:attributes="href viewlet/hide_url">hide</a>
                     <a class="show"
+                       i18n:translate="label_show_item"
                        tal:attributes="href viewlet/show_url">show</a>
                 </dt>
                 <dd class="portletItem">
