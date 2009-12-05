@@ -4,6 +4,9 @@ Changelog
 2.0b1 - Unreleased
 ------------------
 
+* Protect forced Acquisition wrapping by an interface check on IAcquirer. This
+  closes http://dev.plone.org/plone/ticket/9862.
+  [hannosch]
 
 2.0a1 - 2009-11-14
 ------------------

@@ -8,6 +8,7 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import providedBy
 
 from Acquisition import aq_base
+from Acquisition.interfaces import IAcquirer
 from AccessControl.ZopeGuards import guarded_hasattr
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -41,7 +42,8 @@ class BaseOrderedViewletManager(object):
         # security.
         # Copied from Five
         for name, viewlet in viewlets:
-            viewlet = viewlet.__of__(viewlet.context)
+            if IAcquirer.providedBy(viewlet):
+                viewlet = viewlet.__of__(viewlet.context)
             if name not in hidden and guarded_hasattr(viewlet, 'render'):
                 results.append((name, viewlet))
         return results
@@ -117,7 +119,8 @@ class OrderedViewletManager(BaseOrderedViewletManager):
             query_tmpl = "%s/@@manage-viewlets?%%s" % base_url
             results = []
             for index, (name, viewlet) in enumerate(viewlets):
-                viewlet = viewlet.__of__(viewlet.context)
+                if IAcquirer.providedBy(viewlet):
+                    viewlet = viewlet.__of__(viewlet.context)
                 viewlet_id = "%s:%s" % (self.__name__, name)
                 options = {'index': index,
                            'name': name,
