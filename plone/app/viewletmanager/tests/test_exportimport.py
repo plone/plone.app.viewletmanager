@@ -3,7 +3,7 @@ from OFS.Folder import Folder
 from persistent.dict import PersistentDict
 from zope.component import getUtility
 from zope.component import getSiteManager
-from zope.app.component.hooks import setHooks, setSite
+from zope.site.hooks import setHooks, setSite
 from five.localsitemanager import make_objectmanager_site
 
 from Products.GenericSetup.tests.common import BaseRegistryTests
@@ -120,21 +120,21 @@ _FRAGMENT6_IMPORT = """\
 """
 
 class Layer:
+
     @classmethod
     def setUp(cls):
         from zope.component import provideAdapter
-        
+
         from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
         from Products.GenericSetup.interfaces import IBody
-        from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
         from Products.GenericSetup.interfaces import ISetupEnviron
-        
+
         provideAdapter(factory=ViewletSettingsStorageNodeAdapter, 
             adapts=(IViewletSettingsStorage, ISetupEnviron),
             provides=IBody)
 
 class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
-    
+
     layer = Layer
 
     def _getTargetClass(self):
@@ -551,7 +551,3 @@ def test_suite():
     suite.addTest(makeSuite(exportViewletSettingsStorageTests))
     suite.addTest(makeSuite(importViewletSettingsStorageTests))
     return suite
-
-if __name__ == '__main__':
-    framework()
-
