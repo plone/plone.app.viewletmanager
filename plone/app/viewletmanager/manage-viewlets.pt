@@ -35,6 +35,7 @@
 
 <body>
 <metal:main fill-slot="main">
+
     <div tal:replace="structure provider:plone.abovecontenttitle" />
 
     <h1 class="documentFirstHeading"
@@ -44,14 +45,14 @@
 
     <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-    <p class="documentDescription"
+    <div class="documentDescription" class="documentDescription"
        i18n:translate="label_description">
         Description
-    </p>
+    </div>
 
     <div tal:replace="structure provider:plone.abovecontentbody" />
 
-    <div>
+    <div id="content-core">
         <p>
             This item does not have any body text, click the edit tab to change it.
         </p>

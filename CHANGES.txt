@@ -4,6 +4,10 @@ Changelog
 2.0b2 - unreleased
 ------------------
 
+- Updated manage-viewlets.pt to the recent markup conventions.
+  References http://dev.plone.org/plone/ticket/9981
+  [spliter]
+
 
 2.0b1 - 2009-12-27
 ------------------
