@@ -1,13 +1,12 @@
 Changelog
 =========
 
-2.0b2 - unreleased
+2.0b2 - 2010-02-17
 ------------------
 
 - Updated manage-viewlets.pt to the recent markup conventions.
   References http://dev.plone.org/plone/ticket/9981
   [spliter]
-
 
 2.0b1 - 2009-12-27
 ------------------
@@ -34,7 +33,6 @@ Changelog
 * Use JS calls to handle show/hide/move actions instead of forcing a page
   reload. Will fall back to old method if JavaScript is not available.
   [esteele]
-
 
 1.2.2 - 2009-03-07
 ------------------
