@@ -4,6 +4,12 @@ Changelog
 2.0b3 - unreleased
 ------------------
 
+- Provide some basic styling for @@manage-viewlets. Remove the use of
+  .portletHeader and .portletItem styles and define everything inline.
+  Closes http://dev.plone.org/plone/ticket/10006
+  Closes http://dev.plone.org/plone/ticket/10178
+  [esteele]
+  
 - Push @@manage-viewlets css into style_slot instead of css_slot.
   [esteele]
 

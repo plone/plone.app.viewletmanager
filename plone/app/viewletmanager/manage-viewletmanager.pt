@@ -1,14 +1,14 @@
 <div class="managedViewlets" tal:attributes="id view/normalized_name"
      i18n:domain="plone">
-    <dl class="managedPortlet notify">
-        <dt class="portletHeader">
+    <dl class="viewletmanager">
+        <dt>
             ViewletManager: <span tal:content="view/name">ViewletManager name</span>
             (<span tal:content="view/interface" />)
         </dt>
-        <dd class="portletItem">
+        <dd>
             <dl tal:repeat="viewlet options/viewlets"
-                tal:attributes="class python:'managedPortlet viewlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
-                <dt class="portletHeader">
+                tal:attributes="class python:'viewlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
+                <dt>
                     Viewlet: <span tal:replace="viewlet/name">Viewlet name</span>
                     (<span tal:replace="viewlet/index">Index</span>)
                     <a class="up"
@@ -24,7 +24,7 @@
                        i18n:translate="label_show_item"
                        tal:attributes="href viewlet/show_url">Show</a>
                 </dt>
-                <dd class="portletItem">
+                <dd>
                     <div tal:replace="structure viewlet/content"></div>
                     <div class="visualClear"><!-- --></div>
                 </dd>

@@ -8,8 +8,15 @@
 
       <metal:css_slot fill-slot="style_slot">
             <style type="text/css" media="screen">
+                .viewletmanager, .viewlet { display: block; margin: .5em;}
+                .viewletmanager { border: 1px solid #000;}
+                .viewletmanager > dt { border-bottom: 1px solid #000; }
+                .viewletmanager > dt, .viewlet > dt { font-size: .8em; background: #EEE; padding: .5em; }
+                .viewlet { border: 1px solid #999; }
+                .viewlet > dt { border-bottom: 1px solid #999; }
                 .viewlet > dt > a.show { display: none; }
                 .viewlet > dt > a.hide { display: inline; }
+                .viewletmanager dd, .viewlet dd { padding: .5em; }
                 .viewlet.hiddenViewlet > dt > a.hide{ display:none; }
                 .viewlet.hiddenViewlet > dt > a.show { display: inline; }
             </style>
