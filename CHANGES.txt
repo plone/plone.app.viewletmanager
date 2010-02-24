@@ -4,6 +4,8 @@ Changelog
 2.0b3 - unreleased
 ------------------
 
+- Push @@manage-viewlets css into style_slot instead of css_slot.
+  [esteele]
 
 2.0b2 - 2010-02-17
 ------------------

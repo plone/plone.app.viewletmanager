@@ -6,7 +6,7 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
 
-      <metal:css_slot fill-slot="css_slot">
+      <metal:css_slot fill-slot="style_slot">
             <style type="text/css" media="screen">
                 .viewlet > dt > a.show { display: none; }
                 .viewlet > dt > a.hide { display: inline; }
