@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b3 - unreleased
+2.0b3 - 2010-03-03
 ------------------
 
 - Provide some basic styling for @@manage-viewlets. Remove the use of
