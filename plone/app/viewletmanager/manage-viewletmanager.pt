@@ -13,10 +13,10 @@
                     (<span tal:replace="viewlet/index">Index</span>)
                     <a class="up"
                        tal:condition="viewlet/up_url | nothing"
-                       tal:attributes="href viewlet/up_url">&uarr;</a>
+                       tal:attributes="href viewlet/up_url">&#9650;</a>
                     <a class="down"
                        tal:condition="viewlet/down_url | nothing"
-                       tal:attributes="href viewlet/down_url">&darr;</a>
+                       tal:attributes="href viewlet/down_url">&#9660;</a>
                     <a class="hide"
                        i18n:translate="label_hide_item"
                        tal:attributes="href viewlet/hide_url">Hide</a>

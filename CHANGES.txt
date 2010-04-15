@@ -4,6 +4,9 @@ Changelog
 2.0b4 - Unreleased
 ------------------
 
+- Use Unicode up/down arrows in @@manage-viewlets.
+  [esteele]
+
 2.0b3 - 2010-03-03
 ------------------
 
