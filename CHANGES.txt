@@ -4,6 +4,9 @@ Changelog
 2.0b4 - Unreleased
 ------------------
 
+- Implement IViewView so viewlets registered to this interface can be managed.
+  [elro]
+
 - Use Unicode up/down arrows in @@manage-viewlets.
   [esteele]
 

@@ -4,6 +4,10 @@
 
     <include package=".exportimport" />
 
+    <class class=".manager.ManageViewlets">
+        <implements interface="plone.app.layout.globals.interfaces.IViewView" />
+    </class>
+
     <browser:page
         for="*"
         name="manage-viewlets"
