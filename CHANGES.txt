@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b4 - Unreleased
+2.0b4 - 2010-05-01
 ------------------
 
 - Implement IViewView so viewlets registered to this interface can be managed.
