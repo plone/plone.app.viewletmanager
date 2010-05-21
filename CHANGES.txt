@@ -4,6 +4,9 @@ Changelog
 2.0b5 - Unreleased
 ------------------
 
+ - removed duplicated class statement in manage-viewlets.pt to allow cmf.pt
+   [pilz]
+
 2.0b4 - 2010-05-01
 ------------------
 

@@ -52,7 +52,7 @@
 
     <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-    <div class="documentDescription" class="documentDescription"
+    <div class="documentDescription"
        i18n:translate="label_description">
         Description
     </div>
