@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b5 - Unreleased
+2.0b5 - 2010-06-03
 ------------------
 
  - removed duplicated class statement in manage-viewlets.pt to allow cmf.pt
