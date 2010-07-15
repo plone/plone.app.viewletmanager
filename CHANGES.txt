@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0 - Unreleased
+2.0 - 2010-07-15
 ----------------
 
 - Silence `Nothing to import / export.` log messages.
@@ -10,8 +10,9 @@ Changelog
 2.0b5 - 2010-06-03
 ------------------
 
- - removed duplicated class statement in manage-viewlets.pt to allow cmf.pt
-   [pilz]
+- Removed duplicated class statement in manage-viewlets.pt for compatibility
+  with Chameleon.
+  [pilz]
 
 2.0b4 - 2010-05-01
 ------------------
