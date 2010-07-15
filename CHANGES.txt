@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.0b6 - Unreleased
-------------------
+2.0 - Unreleased
+----------------
+
+- Silence `Nothing to import / export.` log messages.
+  [hannosch]
 
 2.0b5 - 2010-06-03
 ------------------

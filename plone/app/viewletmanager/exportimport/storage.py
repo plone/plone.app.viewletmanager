@@ -7,13 +7,13 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 
+
 def importViewletSettingsStorage(context):
     """Import viewlet settings."""
     logger = context.getLogger('plone.app.viewletmanager')
 
     body = context.readDataFile('viewlets.xml')
     if body is None:
-        logger.info("Nothing to import")
         return
 
     storage = getUtility(IViewletSettingsStorage)
@@ -22,25 +22,24 @@ def importViewletSettingsStorage(context):
     if importer is None:
         logger.warning("Import adapter missing.")
         return
-        
+
     # set filename on importer so that syntax errors can be reported properly
     try:
         subdir = context._profile_path
     except AttributeError:
         subdir = ''
-    importer.filename = os.path.join( subdir, 'viewlets.xml' )
+    importer.filename = os.path.join(subdir, 'viewlets.xml')
 
     importer.body = body
     logger.info("Imported.")
+
 
 def exportViewletSettingsStorage(context):
     """Export viewlet settings."""
     logger = context.getLogger('plone.app.viewletmanager')
 
     storage = queryUtility(IViewletSettingsStorage)
-
     if storage is None:
-        logger.info("Nothing to export")
         return
 
     exporter = queryMultiAdapter((storage, context), IBody)
@@ -179,4 +178,3 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 values.append(viewlet_name)
 
         return values
-
