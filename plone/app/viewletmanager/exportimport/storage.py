@@ -95,7 +95,8 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
             manager = child.getAttribute('manager')
             skins = getattr(storage, '_'+nodename)
             if skinname == '*':
-                for skinname in skins:
+                for skinname in tuple(set(storage._hidden.keys() + \
+                                          storage._order.keys())):
                     values = []
                     if not purgeChild:
                         values = list(skins[skinname].get(manager, []))
