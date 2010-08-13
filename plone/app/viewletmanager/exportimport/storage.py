@@ -1,6 +1,7 @@
 import os
 
 from zope.component import getUtility, queryUtility, queryMultiAdapter
+from zope.schema.interfaces import IVocabularyFactory
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 
@@ -54,6 +55,13 @@ def exportViewletSettingsStorage(context):
 class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
     __used_for__ = IViewletSettingsStorage
 
+    def __init__(self, context, environ):
+        super(ViewletSettingsStorageNodeAdapter, self).__init__(context, environ)
+        self.skins = [skin.token for skin in
+                               getUtility(IVocabularyFactory,
+                               'plone.app.vocabularies.Skins')(self.context)]
+
+
     def _exportNode(self):
         """
         Export the object as a DOM node.
@@ -95,10 +103,9 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
             manager = child.getAttribute('manager')
             skins = getattr(storage, '_'+nodename)
             if skinname == '*':
-                for skinname in tuple(set(storage._hidden.keys() + \
-                                          storage._order.keys())):
+                for skinname in self.skins:
                     values = []
-                    if not purgeChild:
+                    if skinname in skins and not purgeChild:
                         values = list(skins[skinname].get(manager, []))
                     values = self._computeValues(values, child)
                     if nodename == 'order':

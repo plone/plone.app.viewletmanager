@@ -3,7 +3,9 @@ Changelog
 
 2.0.2 - unreleased
 ------------------
-
+- hidding viewlets for * (all) skins was not working
+  Closes http://dev.plone.org/plone/ticket/10903
+  [garbas]
 
 2.0.1 - 2010-07-18
 ------------------
