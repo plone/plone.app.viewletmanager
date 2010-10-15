@@ -4,6 +4,9 @@ Changelog
 1.2.3 - unreleased
 ------------------
 
+* Made GenericSetup import handler work correctly with skinname="*" (all)
+  specification. This fixes http://dev.plone.org/plone/ticket/7166.
+  [piv]
 
 1.2.2 - 2009-03-07
 ------------------

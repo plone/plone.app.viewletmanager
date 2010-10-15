@@ -4,7 +4,9 @@ from persistent.dict import PersistentDict
 from zope.component import getUtility
 from zope.component import getSiteManager
 from zope.app.component.hooks import setHooks, setSite
+from zope.schema.interfaces import IVocabularyFactory
 
+from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
@@ -119,11 +121,34 @@ _FRAGMENT6_IMPORT = """\
 </object>
 """
 
+_FRAGMENT7_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+ <order manager="top" skinname="*">
+  <viewlet name="one"/>
+  <viewlet name="two"/>
+  <viewlet name="three"/>
+ </order>
+ <hidden manager="top" skinname="*">
+  <viewlet name="two"/>
+ </hidden>
+</object>
+"""
+
+class DummySkinsTool(object):
+    
+    def __init__(self):
+        self.selections = []
+    
+    def getSkinSelections(self):
+        return self.selections
+
 class Layer:
     @classmethod
     def setUp(cls):
-        from zope.component import provideAdapter
+        from zope.component import provideAdapter, provideUtility
         
+        from plone.app.vocabularies.skins import SkinsVocabulary
         from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
         from Products.GenericSetup.interfaces import IBody
         from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
@@ -132,6 +157,9 @@ class Layer:
         provideAdapter(factory=ViewletSettingsStorageNodeAdapter, 
             adapts=(IViewletSettingsStorage, ISetupEnviron),
             provides=IBody)
+
+        provideUtility(SkinsVocabulary(), provides=IVocabularyFactory,
+            name=u'plone.app.vocabularies.Skins')
 
 class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
     
@@ -187,15 +215,23 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         sm = getSiteManager(self.site)
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
+        self.site.portal_skins = self.skins_tool = DummySkinsTool()
 
     def _populateSite(self, order={}, hidden={}):
+        # here we keep in sync storage settings with portal_skins selections
+        selections = self.skins_tool.selections
+        
         storage = self.storage
         for skinname in order.keys():
+            if skinname not in selections:
+                selections.append(skinname)
             for manager in order[skinname].keys():
                 self.storage.setOrder(manager, skinname,
                                             order[skinname][manager])
 
         for skinname in hidden.keys():
+            if skinname not in selections:
+                selections.append(skinname)
             for manager in hidden[skinname].keys():
                 self.storage.setHidden(manager, skinname,
                                             hidden[skinname][manager])
@@ -245,6 +281,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
     _FRAGMENT4_IMPORT = _FRAGMENT4_IMPORT
     _FRAGMENT5_IMPORT = _FRAGMENT5_IMPORT
     _FRAGMENT6_IMPORT = _FRAGMENT6_IMPORT
+    _FRAGMENT7_IMPORT = _FRAGMENT7_IMPORT
 
     def test_empty_default_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
@@ -398,7 +435,10 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility._order.keys()), 2)
+        # FRAGMENT2 defines "order" tag with skinname="*" so after site
+        # population we got 3 skin selections in portal_skins tool, thus
+        # _order mapping has 3 keys in it
+        self.assertEqual(len(utility._order.keys()), 3)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
@@ -545,6 +585,42 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context = DummyImportContext(site, False)
         context._files['viewlets.xml'] = """<?xml version="1.0"?>\n<"""
         self.assertRaises(ExpatError, importViewletSettingsStorage, context)
+
+    def test_issue_7166(self):
+        """Hidding viewlets with skinname="*" doesn't work. It only
+        works for imported before skin names. Instead it has to check
+        skin selections in portal_skins tool.
+        http://dev.plone.org/plone/ticket/7166
+        """
+        from plone.app.viewletmanager.exportimport.storage import \
+                                                importViewletSettingsStorage
+        
+        # we deliberately don't populate storage with any settings
+        # so that to be sure storage is filled in by import handler
+        # based on portal_skins selections
+        
+        site = self.site
+        utility = self.storage
+        self.assertEqual(len(utility._order.keys()), 0)
+        self.assertEqual(len(utility._hidden.keys()), 0)
+
+        # now add a few skins selections to portal_skins tool
+        self.skins_tool.selections = ['basic', 'light', 'fancy']
+
+        context = DummyImportContext(site, False)
+        context._files['viewlets.xml'] = self._FRAGMENT7_IMPORT
+        importViewletSettingsStorage(context)
+
+        # now check if every skin has appropriate data
+        # in viewlet settings storage;
+        # we're not using here getOrder/getHidden methods as they are falling
+        # back to default skinname in case there is no appropriate settings
+        # defined for requested skinname
+        for skinname in ('basic', 'light', 'fancy'):
+            self.assertEqual(utility._order.get(skinname, {}).get('top'),
+                             ('one', 'two', 'three'))
+            self.assertEqual(utility._hidden.get(skinname, {}).get('top'),
+                             ('two',))
 
 def test_suite():
     from unittest import TestSuite, makeSuite
