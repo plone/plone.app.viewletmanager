@@ -30,7 +30,7 @@ setup(name='plone.app.viewletmanager',
         test=[
             'zope.publisher',
             'zope.testing',
-            'Plone',
+            'Products.CMFPlone',
             'Products.PloneTestCase',
         ]
       ),
