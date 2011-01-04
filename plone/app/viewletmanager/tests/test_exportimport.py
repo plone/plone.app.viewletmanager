@@ -171,6 +171,10 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
 
         self._BODY = _VIEWLETS_XML
 
+    def tearDown(self):
+        sm = getSiteManager(self.site)
+        sm.unregisterUtility(self._obj, IViewletSettingsStorage)
+        
 class _ViewletSettingsStorageSetup(BaseRegistryTests):
 
     layer = Layer
@@ -185,6 +189,10 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         sm = getSiteManager(self.site)
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
+
+    def tearDown(self):
+        sm = getSiteManager(self.site)
+        sm.unregisterUtility(self.storage, IViewletSettingsStorage)
 
     def _populateSite(self, order={}, hidden={}):
         storage = self.storage
