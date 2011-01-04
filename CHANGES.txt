@@ -3,13 +3,8 @@ Changelog
 
 2.0.2 - unreleased
 ------------------
-
 - Depend on ``Products.CMFPlone`` instead of ``Plone``.
   [elro]
-
-- hidding viewlets for * (all) skins was not working
-  Closes http://dev.plone.org/plone/ticket/10903
-  [garbas]
 
 2.0.1 - 2010-07-18
 ------------------
