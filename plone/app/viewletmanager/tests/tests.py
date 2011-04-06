@@ -1,12 +1,14 @@
 import zope.component.testing
 from zope.testing import doctest
-from zope.testing.doctestunit import DocTestSuite, DocFileSuite
+from zope.testing.doctestunit import DocFileSuite
+
 
 def tearDown(test):
     zope.component.testing.tearDown(test)
 
+
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
     suite = TestSuite()
     suite.addTests((
         DocFileSuite('storage.txt',

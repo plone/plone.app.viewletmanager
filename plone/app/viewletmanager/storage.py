@@ -5,6 +5,7 @@ from persistent.dict import PersistentDict
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 
+
 class ViewletSettingsStorage(Persistent):
     implements(IViewletSettingsStorage)
 

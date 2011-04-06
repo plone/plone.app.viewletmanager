@@ -21,9 +21,10 @@ from urllib import urlencode
 
 
 class BaseOrderedViewletManager(object):
+
     def filter(self, viewlets):
         """Filter the viewlets.
-    
+
         ``viewlets`` is a list of tuples of the form (name, viewlet).
 
         This filters the viewlets just like Five, but also filters out
@@ -144,7 +145,7 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 results.append(options)
 
             self.name = self.__name__
-            self.normalized_name = self.name.replace('.','-')
+            self.normalized_name = self.name.replace('.', '-')
             self.interface = list(providedBy(self).flattened())[0].__identifier__
 
             # and output them
@@ -170,7 +171,7 @@ class ManageViewlets(BrowserView):
         skinname = self.context.getCurrentSkinName()
         hidden = storage.getHidden(manager, skinname)
         if viewlet not in hidden:
-            hidden = hidden + (viewlet,)
+            hidden = hidden + (viewlet, )
             storage.setHidden(manager, skinname, hidden)
 
     def _getOrder(self, manager_name):
@@ -220,8 +221,7 @@ class ManageViewlets(BrowserView):
     def __call__(self):
         base_url = "%s/@@manage-viewlets" % str(
                        getMultiAdapter((self.context, self.request),
-                       name='absolute_url')
-                   )
+                       name='absolute_url'))
         qs = self.request.get('QUERY_STRING', None)
         if qs is not None:
             query = parse_qs(qs)
