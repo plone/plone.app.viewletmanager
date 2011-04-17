@@ -11,9 +11,22 @@ from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
 
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
+from Products.PloneTestCase.layer import PloneSite
+from Testing.ZopeTestCase import installPackage
 
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
+
+# BBB Zope 2.12
+try:
+    from Zope2.App import zcml
+    from OFS import metaconfigure
+    zcml, metaconfigure     # make pyflakes happy...
+    metaconfigure
+except ImportError:
+    from Products.Five import zcml
+    from Products.Five import fiveconfigure as metaconfigure
+
 
 COMMON_SETUP_ORDER = {
     'basic': {'top': ('one', )},
@@ -119,16 +132,30 @@ _FRAGMENT6_IMPORT = """\
 </object>
 """
 
+_FRAGMENT7_IMPORT = """\
+<?xml version="1.0"?>
+<object>
+  <hidden manager="top" skinname="*" >
+    <viewlet name="two"/>
+  </hidden>
+</object>
+"""
 
-class Layer:
+
+class Layer(PloneSite):
 
     @classmethod
     def setUp(cls):
         from zope.component import provideAdapter
-
         from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
         from Products.GenericSetup.interfaces import IBody
         from Products.GenericSetup.interfaces import ISetupEnviron
+
+        metaconfigure.debug_mode = True
+        import plone.app.vocabularies
+        zcml.load_config('configure.zcml', plone.app.vocabularies)
+        metaconfigure.debug_mode = False
+        installPackage('plone.app.vocabularies', quiet=True)
 
         provideAdapter(factory=ViewletSettingsStorageNodeAdapter,
             adapts=(IViewletSettingsStorage, ISetupEnviron),
@@ -254,6 +281,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
     _FRAGMENT4_IMPORT = _FRAGMENT4_IMPORT
     _FRAGMENT5_IMPORT = _FRAGMENT5_IMPORT
     _FRAGMENT6_IMPORT = _FRAGMENT6_IMPORT
+    _FRAGMENT7_IMPORT = _FRAGMENT7_IMPORT
 
     def test_empty_default_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
@@ -262,6 +290,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
+
 
         site = self.site
         utility = self.storage
@@ -407,13 +436,17 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility._order.keys()), 2)
+        #self.assertEqual(len(utility._order.keys()), 2)
+        self.assertEqual(len(utility._order.keys()), 3)
+
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
                                     ('three', 'four', 'two', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'),
                                             ('one', 'four'))
+        self.assertEqual(utility.getOrder('top', 'light'),
+                                            ('four', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
         context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
@@ -445,11 +478,12 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context = DummyImportContext(site, False)
         context._files['viewlets.xml'] = self._FRAGMENT3_IMPORT
         importViewletSettingsStorage(context)
-
         self.assertEqual(utility.getOrder('top', 'basic'),
                                                 ('three', 'one', 'four'))
         self.assertEqual(utility.getOrder('top', 'fancy'),
                                             ('three', 'two', 'one', 'four'))
+        self.assertEqual(utility.getOrder('top', 'light'),
+                                            ('three', 'four'))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment4_remove(self):
@@ -545,6 +579,33 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getOrder('top', 'undefined'),
                                         ('one', 'two', 'three'))
         self.assertEqual(utility.getHidden('top', 'undefined'), ('two', ))
+
+    def test_fragment7_make_default(self):
+        from plone.app.viewletmanager.exportimport.storage import \
+                                                importViewletSettingsStorage
+
+        _ORDER = COMMON_SETUP_ORDER
+        _HIDDEN = COMMON_SETUP_HIDDEN
+
+        self._populateSite(order=_ORDER, hidden=_HIDDEN)
+
+        site = self.site
+        utility = self.storage
+        self.assertEqual(len(utility._order.keys()), 2)
+        self.assertEqual(len(utility._hidden.keys()), 1)
+
+        self.assertEqual(utility.getOrder('top', 'fancy'),
+                                    ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
+                                    ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
+        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+
+        context = DummyImportContext(site, False)
+        context._files['viewlets.xml'] = self._FRAGMENT7_IMPORT
+        importViewletSettingsStorage(context)
+        self.assertEqual(utility.getHidden('top', 'fancy'), ('two', ))
+        self.assertEqual(utility.getHidden('top', 'basic'), ('two', ))
 
     def test_syntax_error_reporting(self):
         from plone.app.viewletmanager.exportimport.storage import \
