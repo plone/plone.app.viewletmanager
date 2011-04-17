@@ -45,5 +45,6 @@ setup(name='plone.app.viewletmanager',
         'ZODB3',
         'Acquisition',
         'Zope2',
+        'plone.app.vocabularies',
       ],
       )

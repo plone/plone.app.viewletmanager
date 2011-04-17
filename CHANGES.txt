@@ -5,6 +5,13 @@ Changelog
 2.0.3 - Unreleased
 ------------------
 
+- Hiding viewlets for ``skinname="*"`` was not working properly.
+  Closes http://dev.plone.org/plone/ticket/10903
+  [garbas, WouterVH]
+
+- Add ``plone.app.vocabularies`` as dependency to get the list of existing skins.
+  [WouterVH]
+
 - Add MANIFEST.in.
   [WouterVH]
 
