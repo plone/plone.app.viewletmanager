@@ -21,7 +21,7 @@
                 .viewlet.hiddenViewlet > dt > a.show { display: inline; }
             </style>
       </metal:css_slot>
-      
+
       <metal:javascript_head_slot fill-slot="javascript_head_slot">
           <script type="text/javascript" charset="utf-8">
               jq(document).ready(function() {
@@ -29,7 +29,7 @@
               });
 
               function registerClickEvents(){
-                  jq('.up, .down, .hide, .show').click(function () { 
+                  jq('.up, .down, .hide, .show').click(function () {
                         url = jq(this).attr('href');
                         vm = jq(this).parents().filter('.managedViewlets').get(0);
                         jq(vm).load(url + ' #' + jq(vm).attr('id') + '.managedViewlets > dl','',function(){registerClickEvents();});

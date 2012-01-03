@@ -1,43 +1,43 @@
 """
-The following examples would all be added into the viewlets.xml file. 
+The following examples would all be added into the viewlets.xml file.
 
 Re-order viewlets::
 
-    <order manager="plone.portaltop" skinname="Plone 
+    <order manager="plone.portaltop" skinname="Plone
     Default">
       <viewlet name="plone.header"/>
       <viewlet name="plone.personal_bar"/>
     </order>
 
-Move a viewlet using insert-before and insert-after (this will only affect 
-the skinname that is specified, in this case 'My Custom Theme'):: 
+Move a viewlet using insert-before and insert-after (this will only affect
+the skinname that is specified, in this case 'My Custom Theme')::
 
-    <order manager="plone.portalheader" skinname="My 
+    <order manager="plone.portalheader" skinname="My
     Custom Theme" based-on="Plone Default">
       <viewlet name="plone.global_sections" insertbefore="*"/>
       <viewlet name="plone.site_actions" insertafter="plone.searchbox"/>
     </order>
 
-Hide a viewlet (here we hide the colophon for 'My Custom Theme'):: 
+Hide a viewlet (here we hide the colophon for 'My Custom Theme')::
 
     <hidden manager="plone.portalfooter" skinname="My
     Custom Theme">
       <viewlet name="plone.colophon"/>
     </hidden>
 
-Unhide a specific viewlet using the remove attribute:: 
+Unhide a specific viewlet using the remove attribute::
 
     <hidden manager="plone.portalfooter" skinname="My
     Custom Theme">
       <viewlet name="plone.colophon" remove="True"/>
     </hidden>
 
-Unhide all viewlets for a given manager using the purge attribute:: 
+Unhide all viewlets for a given manager using the purge attribute::
 
     <hidden manager="plone.portalfooter" skinname="My
     Custom Theme" purge="True"/>
 
-Hide a viewlet for all skins:: 
+Hide a viewlet for all skins::
 
     <hidden manager="plone.portalfooter" skinname="*">
       <viewlet name="plone.colophon"/>
