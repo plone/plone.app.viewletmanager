@@ -212,13 +212,17 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
     def setUp(self):
         BaseRegistryTests.setUp(self)
         setHooks()
-        self.root.site = Folder(id='site')
-        self.site = self.root.site
+        self.app.site = Folder(id='site')
+        self.site = self.app.site
         make_objectmanager_site(self.site)
         setSite(self.site)
         sm = getSiteManager(self.site)
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
+
+    def afterSetUp(self):
+        # avoid setting up an unrestricted user, which causes test isolation issues
+        pass
 
     def tearDown(self):
         sm = getSiteManager(self.site)
