@@ -5,8 +5,8 @@ version = '2.0.3'
 setup(name='plone.app.viewletmanager',
       version=version,
       description="configurable viewlet manager",
-      long_description=open("README.txt").read() + "\n" + \
-                       open("CHANGES.txt").read(),
+      long_description=open("README.rst").read() + "\n" + \
+                       open("CHANGES.rst").read(),
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Environment :: Web Environment",
