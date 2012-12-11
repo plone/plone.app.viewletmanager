@@ -1,0 +1,2 @@
+*.py?
+/plone.app.viewletmanager.egg-info/
