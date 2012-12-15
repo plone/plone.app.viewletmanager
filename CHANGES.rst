@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.3 - Unreleased
+2.0.3 (2012-12-15)
 ------------------
 
 - Hiding viewlets for ``skinname="*"`` was not working properly.
