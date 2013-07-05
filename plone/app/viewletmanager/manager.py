@@ -155,6 +155,34 @@ class OrderedViewletManager(BaseOrderedViewletManager):
             return BaseOrderedViewletManager.render(self)
 
 
+class WeightedOrderedViewletManager(OrderedViewletManager):
+    """This manager order viewlet using a weight attribute."""
+
+    def sort(self, viewlets):
+        """Sort the viewlets.
+
+        ``viewlets`` is a list of tuples of the form (name, viewlet).
+
+        This sorts the viewlets by the order looked up from a weight attribute.
+        If the attribute is not found, the weight value will be 0.
+        If the attribute exists, it's value is transformed to an integer.
+        Then it compares
+        """
+        results = super(WeightedOrderedViewletManager, self).sort(viewlets)
+        def get_weight(viewlet_tuple):
+            name, viewlet = viewlet_tuple
+            weight = getattr(viewlet, 'weight', 0)
+            try:
+                weight = int(weight)
+            except ValueError:
+                weight = 0
+            return weight
+
+        results.sort(key=get_weight)
+
+        return results
+
+
 class ManageViewlets(BrowserView):
     implements(IViewletManagementView)
 

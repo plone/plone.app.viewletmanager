@@ -139,3 +139,25 @@ We can also hide viewlets.
     >>> manager.update()
     >>> manager.render()
     u'third\nsecond'
+
+Let's now setup the Weighted manager
+
+    >>> from plone.app.viewletmanager.manager import WeightedOrderedViewletManager
+    >>> WLeftColumn = ViewletManager('wleft', ILeftColumn,
+    ...                             bases=(WeightedOrderedViewletManager,))
+    >>> wmanager = WLeftColumn(content, request, view)
+
+By default the Weighted manager will be the same as Ordererd manager:
+
+    >>> wmanager.update()
+    >>> wmanager.render()
+    u'first\nsecond\nthird'
+
+But now we can set a  weight attribute and change this order:
+
+    >>> ThirdViewlet.weight = -10
+    >>> FirstViewlet.weight = 10
+    >>> SecondViewlet.weight = 100
+    >>> wmanager.update()
+    >>> wmanager.render()
+    u'third\nfirst\nsecond'

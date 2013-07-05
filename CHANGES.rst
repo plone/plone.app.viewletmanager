@@ -5,7 +5,9 @@ Changelog
 2.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add WeightedOrderedViewletManager which sort on viewlet weight.
+  It makes it easy to change order of viewlets by changing in sources.
+  [toutpt]
 
 
 2.0.3 (2012-12-15)
