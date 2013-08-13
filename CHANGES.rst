@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.4 (unreleased)
+2.0.4 (2013-08-13)
 ------------------
 
 - Handle exception during viewlet rendering process: log the exception and
