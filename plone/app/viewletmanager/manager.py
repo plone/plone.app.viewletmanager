@@ -17,7 +17,10 @@ from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 
 from cgi import parse_qs
+from logging import getLogger
 from urllib import urlencode
+
+logger = getLogger('plone.app.viewletmanager')
 
 
 class BaseOrderedViewletManager(object):
@@ -81,9 +84,25 @@ class BaseOrderedViewletManager(object):
 
     def render(self):
         if self.template:
-            return self.template(viewlets=self.viewlets)
+            try:
+                return self.template(viewlets=self.viewlets)
+            except Exception, e:
+                name = self.__name__
+                msg = "rendering of %s fails: %s"
+                logger.error(msg % (name, e))
+                return u"error while rendering %s\n" % name
         else:
-            return u'\n'.join([viewlet.render() for viewlet in self.viewlets])
+            html = []
+            for viewlet in self.viewlets:
+                try:
+                    html.append(viewlet.render())
+                except Exception, e:
+                    name = self.__name__
+                    vname = viewlet.__name__
+                    msg = "rendering of %s in %s fails: %s"
+                    logger.error(msg % (name, vname, e))
+                    html.append(u"error while rendering %s" % vname)
+            return u"\n".join(html)
 
 
 class OrderedViewletManager(BaseOrderedViewletManager):

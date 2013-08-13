@@ -5,7 +5,8 @@ Changelog
 2.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle exception during viewlet rendering process: log the exception and
+  display an error message. [toutpt]
 
 
 2.0.3 (2012-12-15)
