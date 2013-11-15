@@ -90,10 +90,9 @@ class BaseOrderedViewletManager(object):
             except Exception, e:
                 trace = traceback.format_exc()
                 name = self.__name__
-                msg = "rendering of %s fails: %s"
-                logger.error(msg % (name, e))
-                return u"error while rendering %s\n%s\n" % (
-                    name, trace)
+                msg = "rendering of %s fails: %s\n%s\n"
+                logger.error(msg % (name, e, trace))
+                return u"error while rendering %s\n" % name
         else:
             html = []
             for viewlet in self.viewlets:
@@ -103,10 +102,9 @@ class BaseOrderedViewletManager(object):
                     name = self.__name__
                     trace = traceback.format_exc()
                     vname = viewlet.__name__
-                    msg = "rendering of %s in %s fails: %s"
-                    logger.error(msg % (name, vname, e))
-                    html.append(u"error while rendering %s\n%s\n" % (
-                        vname, trace))
+                    msg = "rendering of %s in %s fails: %s\n%s\n"
+                    logger.error(msg % (name, vname, e, trace))
+                    html.append(u"error while rendering %s\n" % vname)
             return u"\n".join(html)
 
 
