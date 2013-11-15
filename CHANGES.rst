@@ -5,8 +5,8 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- If render fails, be more verbose about the exception to know where and how it
+  happens in the stack. [kiorky]
 
 2.0.4 (2013-08-13)
 ------------------
