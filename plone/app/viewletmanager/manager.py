@@ -20,6 +20,8 @@ from cgi import parse_qs
 from logging import getLogger
 import traceback
 from urllib import urlencode
+from ZODB.POSException import ConflictError
+from AccessControl.unauthorized import Unauthorized
 
 logger = getLogger('plone.app.viewletmanager')
 
@@ -87,6 +89,10 @@ class BaseOrderedViewletManager(object):
         if self.template:
             try:
                 return self.template(viewlets=self.viewlets)
+            except ConflictError:
+                raise
+            except Unauthorized:
+                raise
             except Exception, e:
                 trace = traceback.format_exc()
                 name = self.__name__
@@ -98,6 +104,10 @@ class BaseOrderedViewletManager(object):
             for viewlet in self.viewlets:
                 try:
                     html.append(viewlet.render())
+                except ConflictError:
+                    raise
+                except Unauthorized:
+                    raise
                 except Exception, e:
                     name = self.__name__
                     trace = traceback.format_exc()

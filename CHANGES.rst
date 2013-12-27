@@ -5,6 +5,9 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
+- Do not catch authorization and conflict errors in viewlet manager.
+  [thomasdesvenain]
+
 - If render fails, be more verbose about the exception to know where and how it
   happens in the stack. [kiorky]
 
@@ -110,7 +113,7 @@ Changelog
 ------------------
 
 - Added translations for Show/Hide labels in @@manage-portlets view:
-  label_show_item and label_hide_item. These msgids are shared with 
+  label_show_item and label_hide_item. These msgids are shared with
   @@manage-viewlets view to show/hide viewlets. This closes
   http://dev.plone.org/plone/ticket/9733
   [naro]
