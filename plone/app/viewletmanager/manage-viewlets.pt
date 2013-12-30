@@ -28,8 +28,8 @@
                   $(function() {
                       $('.managedViewlets').on('click', '.up, .down, .hide, .show', function (e) {
                             e.preventDefault();
-                            url = $(e.currentTarget).attr('href');
-                            vm = $(e.delegateTarget);
+                            var url = $(e.currentTarget).attr('href'),
+                                vm = $(e.delegateTarget);
                             $(vm).load(url + ' #' + $(vm).attr('id') + '.managedViewlets > dl');
                       });
                   });
