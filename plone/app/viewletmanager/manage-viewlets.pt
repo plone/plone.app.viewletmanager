@@ -26,11 +26,11 @@
           <script type="text/javascript" charset="utf-8">
               (function($) {
                   $(function() {
-                      $('.managedViewlets').on('click', '.up, .down, .hide, .show', function () {
-                            url = $(this).attr('href');
-                            vm = $(this).closest('.managedViewlets');
+                      $('.managedViewlets').on('click', '.up, .down, .hide, .show', function (e) {
+                            e.preventDefault();
+                            url = $(e.currentTarget).attr('href');
+                            vm = $(e.delegateTarget);
                             $(vm).load(url + ' #' + $(vm).attr('id') + '.managedViewlets > dl');
-                            return false;
                       });
                   });
               })(jQuery);
