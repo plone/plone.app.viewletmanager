@@ -10,6 +10,7 @@ Changelog
 
 - If render fails, be more verbose about the exception to know where and how it
   happens in the stack. [kiorky]
+- refactor JS in template [petschki]
 
 2.0.4 (2013-08-13)
 ------------------
