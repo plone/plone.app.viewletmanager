@@ -28,6 +28,8 @@ logger = getLogger('plone.app.viewletmanager')
 
 class BaseOrderedViewletManager(object):
 
+    _uncatched_errors = (ConflictError,)
+
     def filter(self, viewlets):
         """Filter the viewlets.
 
@@ -89,9 +91,7 @@ class BaseOrderedViewletManager(object):
         if self.template:
             try:
                 return self.template(viewlets=self.viewlets)
-            except ConflictError:
-                raise
-            except Unauthorized:
+            except self._uncatched_errors:
                 raise
             except Exception, e:
                 trace = traceback.format_exc()
@@ -104,9 +104,7 @@ class BaseOrderedViewletManager(object):
             for viewlet in self.viewlets:
                 try:
                     html.append(viewlet.render())
-                except ConflictError:
-                    raise
-                except Unauthorized:
+                except self._uncatched_errors:
                     raise
                 except Exception, e:
                     name = self.__name__

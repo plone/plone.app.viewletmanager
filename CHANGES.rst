@@ -5,7 +5,8 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
-- Do not catch authorization and conflict errors in viewlet manager.
+- Do not catch conflict errors in viewlet manager.
+  We can programmatically setup the exceptions that are not caught.
   [thomasdesvenain]
 
 - If render fails, be more verbose about the exception to know where and how it
