@@ -1,2 +1,4 @@
 *.py?
 /plone.app.viewletmanager.egg-info/
+.project
+.pydevproject
