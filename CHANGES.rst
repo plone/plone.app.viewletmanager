@@ -5,6 +5,10 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
+- Do not catch conflict errors and keywordinterrupt in viewlet manager.
+  We can programmatically setup the exceptions that are not caught.
+  [thomasdesvenain]
+
 - If render fails, be more verbose about the exception to know where and how it
   happens in the stack. [kiorky]
 - refactor JS in template [petschki]
@@ -111,7 +115,7 @@ Changelog
 ------------------
 
 - Added translations for Show/Hide labels in @@manage-portlets view:
-  label_show_item and label_hide_item. These msgids are shared with 
+  label_show_item and label_hide_item. These msgids are shared with
   @@manage-viewlets view to show/hide viewlets. This closes
   http://dev.plone.org/plone/ticket/9733
   [naro]

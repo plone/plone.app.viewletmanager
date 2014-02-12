@@ -20,11 +20,14 @@ from cgi import parse_qs
 from logging import getLogger
 import traceback
 from urllib import urlencode
+from ZODB.POSException import ConflictError
 
 logger = getLogger('plone.app.viewletmanager')
 
 
 class BaseOrderedViewletManager(object):
+
+    _uncatched_errors = (ConflictError, KeyboardInterrupt)
 
     def filter(self, viewlets):
         """Filter the viewlets.
@@ -87,6 +90,8 @@ class BaseOrderedViewletManager(object):
         if self.template:
             try:
                 return self.template(viewlets=self.viewlets)
+            except self._uncatched_errors:
+                raise
             except Exception, e:
                 trace = traceback.format_exc()
                 name = self.__name__
@@ -98,6 +103,8 @@ class BaseOrderedViewletManager(object):
             for viewlet in self.viewlets:
                 try:
                     html.append(viewlet.render())
+                except self._uncatched_errors:
+                    raise
                 except Exception, e:
                     name = self.__name__
                     trace = traceback.format_exc()
