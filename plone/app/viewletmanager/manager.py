@@ -21,14 +21,13 @@ from logging import getLogger
 import traceback
 from urllib import urlencode
 from ZODB.POSException import ConflictError
-from AccessControl.unauthorized import Unauthorized
 
 logger = getLogger('plone.app.viewletmanager')
 
 
 class BaseOrderedViewletManager(object):
 
-    _uncatched_errors = (ConflictError,)
+    _uncatched_errors = (ConflictError, KeyboardInterrupt)
 
     def filter(self, viewlets):
         """Filter the viewlets.

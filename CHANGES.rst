@@ -5,7 +5,7 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
-- Do not catch conflict errors in viewlet manager.
+- Do not catch conflict errors and keywordinterrupt in viewlet manager.
   We can programmatically setup the exceptions that are not caught.
   [thomasdesvenain]
 
