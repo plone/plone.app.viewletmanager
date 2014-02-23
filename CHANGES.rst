@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.5 (unreleased)
+2.0.5 (2014-02-23)
 ------------------
 
 - Do not catch conflict errors and keywordinterrupt in viewlet manager.
