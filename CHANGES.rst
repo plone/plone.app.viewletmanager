@@ -5,7 +5,11 @@ Changelog
 2.0.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use the ``!important`` directive for the ``.hide`` and ``.show`` CSS
+  declarations on the ``@@manage-viewlets`` view. Twitter Bootstrap is using
+  ``!important`` on these class names too, which made the viewlet management
+  view unusable.
+  [thet]
 
 
 2.0.5 (2014-02-23)
@@ -17,7 +21,10 @@ Changelog
 
 - If render fails, be more verbose about the exception to know where and how it
   happens in the stack. [kiorky]
-- refactor JS in template [petschki]
+
+- refactor JS in template.
+  [petschki]
+
 
 2.0.4 (2013-08-13)
 ------------------

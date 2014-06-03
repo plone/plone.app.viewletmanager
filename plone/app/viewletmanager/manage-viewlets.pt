@@ -14,11 +14,11 @@
                 .viewletmanager > dt, .viewlet > dt { font-size: .8em; background: #EEE; padding: .5em; }
                 .viewlet { border: 1px solid #999; }
                 .viewlet > dt { border-bottom: 1px solid #999; }
-                .viewlet > dt > a.show { display: none; }
-                .viewlet > dt > a.hide { display: inline; }
+                .viewlet > dt > a.show { display: none !important; }
+                .viewlet > dt > a.hide { display: inline !important; }
                 .viewletmanager dd, .viewlet dd { padding: .5em; }
-                .viewlet.hiddenViewlet > dt > a.hide{ display:none; }
-                .viewlet.hiddenViewlet > dt > a.show { display: inline; }
+                .viewlet.hiddenViewlet > dt > a.hide { display:none !important; }
+                .viewlet.hiddenViewlet > dt > a.show { display: inline !important; }
             </style>
       </metal:css_slot>
 
@@ -36,7 +36,6 @@
               })(jQuery);
           </script>
       </metal:javascript_head_slot>
-
 
 <body>
 <metal:main fill-slot="main">
@@ -69,4 +68,3 @@
 
 </body>
 </html>
-
