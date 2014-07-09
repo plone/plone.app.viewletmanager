@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.6 (unreleased)
+2.0.6 (2014-07-10)
 ------------------
 
 - Use the ``!important`` directive for the ``.hide`` and ``.show`` CSS
