@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from OFS.Folder import Folder
 
 from persistent.dict import PersistentDict

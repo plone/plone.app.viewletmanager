@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 The following examples would all be added into the viewlets.xml file.
 
