@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from zope.interface import implements
-
 from persistent import Persistent
 from persistent.dict import PersistentDict
-
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from zope.interface import implements
 
 
 class ViewletSettingsStorage(Persistent):

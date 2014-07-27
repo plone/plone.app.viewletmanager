@@ -51,14 +51,13 @@ already been registered in each skin (see Plone Trac ticket #7166)
 .. original content from http://www.sixfeetup.com/company/technologies/plone-content-management-new/quick-reference-cards/swag/swag-images-files/generic_setup.pdf
 
 """
-
-import os
-
-from zope.component import getUtility, queryUtility, queryMultiAdapter
-from zope.schema.interfaces import IVocabularyFactory
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from zope.component import getUtility, queryUtility, queryMultiAdapter
+from zope.schema.interfaces import IVocabularyFactory
+
+import os
 
 
 def importViewletSettingsStorage(context):

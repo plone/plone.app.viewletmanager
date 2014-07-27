@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
-from zope.interface import implements
-from zope.component import getUtility, getAdapters, queryUtility
-from zope.component import getMultiAdapter, queryMultiAdapter
-
-from zope.viewlet.interfaces import IViewlet
-from zope.contentprovider.interfaces import IContentProvider
-
-from zope.interface import providedBy
-
+from AccessControl.ZopeGuards import guarded_hasattr
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
-from AccessControl.ZopeGuards import guarded_hasattr
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
-from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
-from plone.app.viewletmanager.interfaces import IViewletManagementView
-
+from ZODB.POSException import ConflictError
 from cgi import parse_qs
 from logging import getLogger
-import traceback
+from plone.app.viewletmanager.interfaces import IViewletManagementView
+from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from urllib import urlencode
-from ZODB.POSException import ConflictError
+from zope.component import getAdapters
+from zope.component import getMultiAdapter
+from zope.component import getUtility
+from zope.component import queryMultiAdapter
+from zope.component import queryUtility
+from zope.contentprovider.interfaces import IContentProvider
+from zope.interface import implements
+from zope.interface import providedBy
+from zope.viewlet.interfaces import IViewlet
+
+import traceback
+
 
 logger = getLogger('plone.app.viewletmanager')
 

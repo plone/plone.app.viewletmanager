@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
 from OFS.Folder import Folder
-
-from persistent.dict import PersistentDict
-from zope.component import getUtility
-from zope.component import getSiteManager
-from zope.site.hooks import setHooks, setSite
-from five.localsitemanager import make_objectmanager_site
-
+from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
-
-from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.PloneTestCase.layer import PloneSite
 from Testing.ZopeTestCase import installPackage
-
+from five.localsitemanager import make_objectmanager_site
+from persistent.dict import PersistentDict
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
+from zope.component import getSiteManager
+from zope.component import getUtility
+from zope.site.hooks import setHooks
+from zope.site.hooks import setSite
 
 # BBB Zope 2.12
 try:

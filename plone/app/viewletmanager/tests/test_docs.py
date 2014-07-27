@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import zope.component.testing
 from zope.testing import doctest
 from zope.testing.doctestunit import DocFileSuite
+
+import zope.component.testing
 
 
 def tearDown(test):
