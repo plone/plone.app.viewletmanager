@@ -148,7 +148,8 @@ class Layer(PloneSite):
     @classmethod
     def setUp(cls):
         from zope.component import provideAdapter
-        from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
+        from plone.app.viewletmanager.exportimport.storage import \
+            ViewletSettingsStorageNodeAdapter
         from Products.GenericSetup.interfaces import IBody
         from Products.GenericSetup.interfaces import ISetupEnviron
 
@@ -158,9 +159,11 @@ class Layer(PloneSite):
         metaconfigure.debug_mode = False
         installPackage('plone.app.vocabularies', quiet=True)
 
-        provideAdapter(factory=ViewletSettingsStorageNodeAdapter,
+        provideAdapter(
+            factory=ViewletSettingsStorageNodeAdapter,
             adapts=(IViewletSettingsStorage, ISetupEnviron),
-            provides=IBody)
+            provides=IBody
+        )
 
 
 class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
@@ -169,7 +172,7 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
 
     def _getTargetClass(self):
         from plone.app.viewletmanager.exportimport.storage \
-                    import ViewletSettingsStorageNodeAdapter
+            import ViewletSettingsStorageNodeAdapter
         return ViewletSettingsStorageNodeAdapter
 
     def _populate(self, obj):
@@ -222,7 +225,8 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         self.storage = getUtility(IViewletSettingsStorage)
 
     def afterSetUp(self):
-        # avoid setting up an unrestricted user, which causes test isolation issues
+        # avoid setting up an unrestricted user
+        #  which causes test isolation issues
         pass
 
     def tearDown(self):
@@ -230,23 +234,22 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
         sm.unregisterUtility(self.storage, IViewletSettingsStorage)
 
     def _populateSite(self, order={}, hidden={}):
-        storage = self.storage
         for skinname in order.keys():
             for manager in order[skinname].keys():
                 self.storage.setOrder(manager, skinname,
-                                            order[skinname][manager])
+                                      order[skinname][manager])
 
         for skinname in hidden.keys():
             for manager in hidden[skinname].keys():
                 self.storage.setHidden(manager, skinname,
-                                            hidden[skinname][manager])
+                                       hidden[skinname][manager])
 
 
 class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                exportViewletSettingsStorage
+            exportViewletSettingsStorage
 
         context = DummyExportContext(self.site)
         exportViewletSettingsStorage(context)
@@ -259,7 +262,7 @@ class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_normal(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                exportViewletSettingsStorage
+            exportViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -290,12 +293,11 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty_default_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
-
 
         site = self.site
         utility = self.storage
@@ -316,7 +318,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty_explicit_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -341,7 +343,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty_skip_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -366,7 +368,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_specific_child_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -391,7 +393,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_normal(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         site = self.site
         utility = self.storage
@@ -403,15 +405,15 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         importViewletSettingsStorage(context)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                            ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment_skip_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -423,9 +425,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -435,7 +437,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('three', 'two', 'one'))
+                         ('three', 'two', 'one'))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
         context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
@@ -447,22 +449,20 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('three', 'four', 'two', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'),
-                                            ('one', 'four'))
-        self.assertEqual(utility.getOrder('top', 'light'),
-                                            ('four', ))
+                         ('three', 'four', 'two', 'one'))
+        self.assertEqual(utility.getOrder('top', 'basic'), ('one', 'four'))
+        self.assertEqual(utility.getOrder('top', 'light'), ('four', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
         context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
         importViewletSettingsStorage(context)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('four', 'three', 'two', 'one'))
+                         ('four', 'three', 'two', 'one'))
 
     def test_fragment3_skip_purge(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -474,9 +474,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -484,16 +484,16 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._FRAGMENT3_IMPORT
         importViewletSettingsStorage(context)
         self.assertEqual(utility.getOrder('top', 'basic'),
-                                                ('three', 'one', 'four'))
+                         ('three', 'one', 'four'))
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                            ('three', 'two', 'one', 'four'))
+                         ('three', 'two', 'one', 'four'))
         self.assertEqual(utility.getOrder('top', 'light'),
-                                            ('three', 'four'))
+                         ('three', 'four'))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment4_remove(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -505,9 +505,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -521,7 +521,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_fragment5_based_on(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -533,9 +533,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -546,20 +546,20 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 5)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'existing'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'new'),
-                                    ('three', 'two', 'one'))
+                         ('three', 'two', 'one'))
         self.assertEqual(utility.getOrder('top', 'wrongbase'), ('two', ))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment6_make_default(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -571,9 +571,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -582,12 +582,12 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         importViewletSettingsStorage(context)
 
         self.assertEqual(utility.getOrder('top', 'undefined'),
-                                        ('one', 'two', 'three'))
+                         ('one', 'two', 'three'))
         self.assertEqual(utility.getHidden('top', 'undefined'), ('two', ))
 
     def test_fragment7_make_default(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -600,9 +600,9 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 1)
 
         self.assertEqual(utility.getOrder('top', 'fancy'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                                    ('two', 'three', 'one'))
+                         ('two', 'three', 'one'))
         self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
@@ -614,7 +614,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_syntax_error_reporting(self):
         from plone.app.viewletmanager.exportimport.storage import \
-                                                importViewletSettingsStorage
+            importViewletSettingsStorage
         from xml.parsers.expat import ExpatError
         site = self.site
         context = DummyImportContext(site, False)
@@ -623,7 +623,8 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapterTests))
     suite.addTest(makeSuite(exportViewletSettingsStorageTests))

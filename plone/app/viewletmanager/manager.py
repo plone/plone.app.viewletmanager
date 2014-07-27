@@ -153,11 +153,13 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 if IAcquirer.providedBy(viewlet):
                     viewlet = viewlet.__of__(viewlet.context)
                 viewlet_id = "%s:%s" % (self.__name__, name)
-                options = {'index': index,
-                           'name': name,
-                           'hidden': name in hidden,
-                           'show_url': query_tmpl % urlencode({'show': viewlet_id}),
-                           'hide_url': query_tmpl % urlencode({'hide': viewlet_id})}
+                options = {
+                    'index': index,
+                    'name': name,
+                    'hidden': name in hidden,
+                    'show_url': query_tmpl % urlencode({'show': viewlet_id}),
+                    'hide_url': query_tmpl % urlencode({'hide': viewlet_id}),
+                }
 
                 if guarded_hasattr(viewlet, 'render'):
                     viewlet.update()
@@ -166,17 +168,20 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                     options['content'] = u""
                 if index > 0:
                     prev_viewlet = viewlets[index-1][0]
-                    query = {'move_above': "%s;%s" % (viewlet_id, prev_viewlet)}
+                    query = {'move_above': "%s;%s" % (viewlet_id,
+                                                      prev_viewlet)}
                     options['up_url'] = query_tmpl % urlencode(query)
                 if index < (len(viewlets) - 1):
                     next_viewlet = viewlets[index+1][0]
-                    query = {'move_below': "%s;%s" % (viewlet_id, next_viewlet)}
+                    query = {'move_below': "%s;%s" % (viewlet_id,
+                                                      next_viewlet)}
                     options['down_url'] = query_tmpl % urlencode(query)
                 results.append(options)
 
             self.name = self.__name__
             self.normalized_name = self.name.replace('.', '-')
-            self.interface = list(providedBy(self).flattened())[0].__identifier__
+            interface = list(providedBy(self).flattened())[0]
+            self.interface = interface.__identifier__
 
             # and output them
             return self.manager_template(viewlets=results)
@@ -250,8 +255,8 @@ class ManageViewlets(BrowserView):
 
     def __call__(self):
         base_url = "%s/@@manage-viewlets" % str(
-                       getMultiAdapter((self.context, self.request),
-                       name='absolute_url'))
+            getMultiAdapter((self.context, self.request), name='absolute_url')
+        )
         qs = self.request.get('QUERY_STRING', None)
         if qs is not None:
             query = parse_qs(qs)

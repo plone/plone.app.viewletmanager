@@ -12,13 +12,15 @@ def test_suite():
     from unittest import TestSuite
     suite = TestSuite()
     suite.addTests((
-        DocFileSuite('storage.txt',
-                     tearDown=tearDown,
-                     optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+        DocFileSuite(
+            'storage.txt',
+            tearDown=tearDown,
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
         ),
-        DocFileSuite('manager.txt',
-                     tearDown=tearDown,
-                     optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+        DocFileSuite(
+            'manager.txt',
+            tearDown=tearDown,
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
         ),
     ))
     return suite

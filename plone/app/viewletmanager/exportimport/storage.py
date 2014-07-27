@@ -108,10 +108,14 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
     __used_for__ = IViewletSettingsStorage
 
     def __init__(self, context, environ):
-        super(ViewletSettingsStorageNodeAdapter, self).__init__(context, environ)
+        super(ViewletSettingsStorageNodeAdapter, self).__init__(context,
+                                                                environ)
 
-        self.skins = [skin.token for skin in getUtility(IVocabularyFactory,
-                         'plone.app.vocabularies.Skins')(self.context)]
+        self.skins = [
+            skin.token for skin in
+            getUtility(IVocabularyFactory,
+                       'plone.app.vocabularies.Skins')(self.context)
+        ]
 
     def _exportNode(self):
         """
@@ -149,14 +153,17 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
             purgeChild = False
             if child.getAttribute('purge'):
                 purgeChild = self._convertToBoolean(
-                                                  child.getAttribute('purge'))
+                    child.getAttribute('purge')
+                )
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
             skins = getattr(storage, '_'+nodename)
 
-            all_skins = tuple(set(storage._hidden.keys() + \
-                                  storage._order.keys() + \
-                                  self.skins))
+            all_skins = tuple(set(
+                storage._hidden.keys() +
+                storage._order.keys() +
+                self.skins
+            ))
 
             if skinname == '*':
                 for skinname in all_skins:
@@ -195,8 +202,9 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
 
                 if child.hasAttribute('make_default'):
                     make_default = self._convertToBoolean(
-                                        child.getAttribute('make_default'))
-                    if make_default == True:
+                        child.getAttribute('make_default')
+                    )
+                    if make_default:
                         storage.setDefault(manager, skinname)
 
     def _purgeViewletSettings(self):
