@@ -5,7 +5,8 @@ Changelog
 2.0.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- flake8 fixes and general cleanup.
+  [gforcada]
 
 
 2.0.6 (2014-07-10)
