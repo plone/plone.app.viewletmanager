@@ -13,12 +13,12 @@ def test_suite():
     suite = TestSuite()
     suite.addTests((
         DocFileSuite(
-            'storage.txt',
+            'storage.rst',
             tearDown=tearDown,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
         ),
         DocFileSuite(
-            'manager.txt',
+            'manager.rst',
             tearDown=tearDown,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
         ),
