@@ -13,9 +13,8 @@ long_description = '{0}\n{1}'.format(
 extras_require = {
     'test': [
         'Products.CMFPlone',
-        'Products.PloneTestCase',
+        'plone.app.testing',
         'zope.publisher',
-        'zope.testing',
     ]
 }
 
