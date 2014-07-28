@@ -4,23 +4,27 @@ from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
-from Products.PloneTestCase.layer import PloneSite
-from Testing.ZopeTestCase import installPackage
-from five.localsitemanager import make_objectmanager_site
 from persistent.dict import PersistentDict
+from plone.app.viewletmanager.exportimport.storage import \
+    ViewletSettingsStorageNodeAdapter
+from plone.app.viewletmanager.exportimport.storage import \
+    exportViewletSettingsStorage
+from plone.app.viewletmanager.exportimport.storage import \
+    importViewletSettingsStorage
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from plone.app.viewletmanager.storage import ViewletSettingsStorage
-from zope.component import getSiteManager
+from plone.app.viewletmanager.testing import \
+    PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
+from xml.parsers.expat import ExpatError
 from zope.component import getUtility
-from zope.site.hooks import setHooks
-from zope.site.hooks import setSite
+
+import unittest
+
 
 # BBB Zope 2.12
 try:
     from Zope2.App import zcml
     from OFS import metaconfigure
-    zcml, metaconfigure     # make pyflakes happy...
-    metaconfigure
 except ImportError:
     from Products.Five import zcml
     from Products.Five import fiveconfigure as metaconfigure
@@ -140,36 +144,23 @@ _FRAGMENT7_IMPORT = """\
 """
 
 
-class Layer(PloneSite):
-
-    @classmethod
-    def setUp(cls):
-        from zope.component import provideAdapter
-        from plone.app.viewletmanager.exportimport.storage import \
-            ViewletSettingsStorageNodeAdapter
-        from Products.GenericSetup.interfaces import IBody
-        from Products.GenericSetup.interfaces import ISetupEnviron
-
-        metaconfigure.debug_mode = True
-        import plone.app.vocabularies
-        zcml.load_config('configure.zcml', plone.app.vocabularies)
-        metaconfigure.debug_mode = False
-        installPackage('plone.app.vocabularies', quiet=True)
-
-        provideAdapter(
-            factory=ViewletSettingsStorageNodeAdapter,
-            adapts=(IViewletSettingsStorage, ISetupEnviron),
-            provides=IBody
-        )
-
-
 class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
 
-    layer = Layer
+    layer = PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.site = self.layer['portal']
+        sm = self.site.getSiteManager()
+        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
+
+        self._obj = getUtility(IViewletSettingsStorage)
+        self._BODY = _VIEWLETS_XML
+
+    def tearDown(self):
+        sm = self.site.getSiteManager()
+        sm.unregisterUtility(self._obj, IViewletSettingsStorage)
 
     def _getTargetClass(self):
-        from plone.app.viewletmanager.exportimport.storage \
-            import ViewletSettingsStorageNodeAdapter
         return ViewletSettingsStorageNodeAdapter
 
     def _populate(self, obj):
@@ -189,45 +180,26 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         self.assertEqual(type(obj._hidden['light']), PersistentDict)
         self.assertEqual(dict(obj._hidden['light']), hiddendict)
 
-    def setUp(self):
-        setHooks()
-        self.site = Folder('site')
-        make_objectmanager_site(self.site)
-        setSite(self.site)
-        sm = getSiteManager()
-        sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
-
-        self._obj = getUtility(IViewletSettingsStorage)
-
-        self._BODY = _VIEWLETS_XML
-
-    def tearDown(self):
-        sm = getSiteManager(self.site)
-        sm.unregisterUtility(self._obj, IViewletSettingsStorage)
-
 
 class _ViewletSettingsStorageSetup(BaseRegistryTests):
 
-    layer = Layer
+    layer = PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
 
     def setUp(self):
         BaseRegistryTests.setUp(self)
-        setHooks()
-        self.app.site = Folder(id='site')
-        self.site = self.app.site
-        make_objectmanager_site(self.site)
-        setSite(self.site)
-        sm = getSiteManager(self.site)
+        self.app = self.layer['app']
+        self.site = self.layer['portal']
+        sm = self.site.getSiteManager()
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
 
     def afterSetUp(self):
         # avoid setting up an unrestricted user
-        #  which causes test isolation issues
+        # which causes test isolation issues
         pass
 
     def tearDown(self):
-        sm = getSiteManager(self.site)
+        sm = self.site.getSiteManager()
         sm.unregisterUtility(self.storage, IViewletSettingsStorage)
 
     def _populateSite(self, order={}, hidden={}):
@@ -242,12 +214,9 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
                                        hidden[skinname][manager])
 
 
-class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+class ExportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     def test_empty(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            exportViewletSettingsStorage
-
         context = DummyExportContext(self.site)
         exportViewletSettingsStorage(context)
 
@@ -258,8 +227,6 @@ class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(content_type, 'text/xml')
 
     def test_normal(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            exportViewletSettingsStorage
 
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
@@ -275,7 +242,7 @@ class exportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(content_type, 'text/xml')
 
 
-class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
+class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
     _VIEWLETS_XML = _VIEWLETS_XML
     _EMPTY_EXPORT = _EMPTY_EXPORT
@@ -289,9 +256,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
     _FRAGMENT7_IMPORT = _FRAGMENT7_IMPORT
 
     def test_empty_default_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -314,9 +278,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
 
     def test_empty_explicit_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -339,9 +300,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
 
     def test_empty_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -364,9 +322,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility.getOrder('top', 'undefined')), 3)
 
     def test_specific_child_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -389,9 +344,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
 
     def test_normal(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         site = self.site
         utility = self.storage
         self.assertEqual(len(utility._order.keys()), 0)
@@ -409,9 +361,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -440,8 +389,7 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
         importViewletSettingsStorage(context)
 
-        #self.assertEqual(len(utility._order.keys()), 2)
-        self.assertEqual(len(utility._order.keys()), 3)
+        self.assertEqual(len(utility._order.keys()), 4)
 
         self.assertEqual(len(utility._hidden.keys()), 1)
 
@@ -458,9 +406,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
                          ('four', 'three', 'two', 'one'))
 
     def test_fragment3_skip_purge(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -489,9 +434,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment4_remove(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -517,9 +459,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment5_based_on(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -555,9 +494,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment6_make_default(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -583,9 +519,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'undefined'), ('two', ))
 
     def test_fragment7_make_default(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
 
@@ -610,9 +543,6 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(utility.getHidden('top', 'basic'), ('two', ))
 
     def test_syntax_error_reporting(self):
-        from plone.app.viewletmanager.exportimport.storage import \
-            importViewletSettingsStorage
-        from xml.parsers.expat import ExpatError
         site = self.site
         context = DummyImportContext(site, False)
         context._files['viewlets.xml'] = """<?xml version="1.0"?>\n<"""
@@ -620,10 +550,8 @@ class importViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(ViewletSettingsStorageXMLAdapterTests))
-    suite.addTest(makeSuite(exportViewletSettingsStorageTests))
-    suite.addTest(makeSuite(importViewletSettingsStorageTests))
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ViewletSettingsStorageXMLAdapterTests))
+    suite.addTest(unittest.makeSuite(ExportViewletSettingsStorageTests))
+    suite.addTest(unittest.makeSuite(ImportViewletSettingsStorageTests))
     return suite
