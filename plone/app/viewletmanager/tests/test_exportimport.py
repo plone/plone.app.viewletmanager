@@ -389,7 +389,11 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility._order.keys()), 4)
+        # as the fragment FRAGMENT2_IMPORT sets the order for all skins
+        # not only 'light', 'fancy' and 'basic' keys show up, also all other
+        # skins registered on portal_skins. Hence adding them to the order
+        skins = len(self.site.portal_skins.getSkinPaths())
+        self.assertEqual(len(utility._order.keys()), 3 + skins)
 
         self.assertEqual(len(utility._hidden.keys()), 1)
 
