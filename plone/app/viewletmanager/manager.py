@@ -28,7 +28,10 @@ logger = getLogger('plone.app.viewletmanager')
 
 class BaseOrderedViewletManager(object):
 
-    _uncatched_errors = (ConflictError, KeyboardInterrupt)
+    # Sometimes viewlets raise errors handled elsewhere -- e.g. for
+    # embedded ploneformgen forms.
+    # See https://github.com/plone/plone.app.viewletmanager/issues/5
+    _exceptions_handled_elsewhere = (ConflictError, KeyboardInterrupt)
 
     def filter(self, viewlets):
         """Filter the viewlets.
@@ -91,7 +94,7 @@ class BaseOrderedViewletManager(object):
         if self.template:
             try:
                 return self.template(viewlets=self.viewlets)
-            except self._uncatched_errors:
+            except self._exceptions_handled_elsewhere:
                 raise
             except Exception, e:
                 trace = traceback.format_exc()
@@ -104,7 +107,7 @@ class BaseOrderedViewletManager(object):
             for viewlet in self.viewlets:
                 try:
                     html.append(viewlet.render())
-                except self._uncatched_errors:
+                except self._exceptions_handled_elsewhere:
                     raise
                 except Exception, e:
                     name = self.__name__
