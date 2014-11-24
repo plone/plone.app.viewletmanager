@@ -5,6 +5,7 @@ from Acquisition.interfaces import IAcquirer
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from ZODB.POSException import ConflictError
+from ZPublisher.Publish import Retry
 from cgi import parse_qs
 from logging import getLogger
 from plone.app.viewletmanager.interfaces import IViewletManagementView
@@ -31,7 +32,7 @@ class BaseOrderedViewletManager(object):
     # Sometimes viewlets raise errors handled elsewhere -- e.g. for
     # embedded ploneformgen forms.
     # See https://github.com/plone/plone.app.viewletmanager/issues/5
-    _exceptions_handled_elsewhere = (ConflictError, KeyboardInterrupt)
+    _exceptions_handled_elsewhere = (ConflictError, KeyboardInterrupt, Retry)
 
     def filter(self, viewlets):
         """Filter the viewlets.
