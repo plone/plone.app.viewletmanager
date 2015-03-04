@@ -42,12 +42,12 @@ COMMON_SETUP_HIDDEN = {
 _VIEWLETS_XML = """\
 <?xml version="1.0"?>
 <object>
+ <order manager="top" skinname="basic">
+  <viewlet name="one"/>
+ </order>
  <order manager="top" skinname="fancy">
   <viewlet name="two"/>
   <viewlet name="three"/>
-  <viewlet name="one"/>
- </order>
- <order manager="top" skinname="basic">
   <viewlet name="one"/>
  </order>
  <hidden manager="top" skinname="light">
@@ -353,11 +353,11 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         context._files['viewlets.xml'] = self._VIEWLETS_XML
         importViewletSettingsStorage(context)
 
+        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
+        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
+                         ('one', ))
         self.assertEqual(utility.getOrder('top', 'fancy'),
                          ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
         self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
 
     def test_fragment_skip_purge(self):

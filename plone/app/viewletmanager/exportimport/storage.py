@@ -123,8 +123,8 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         output = self._doc.createElement('object')
         for nodename in ('order', 'hidden'):
             skins = getattr(self.context, '_'+nodename)
-            for skin in skins:
-                for name in skins[skin]:
+            for skin in sorted(skins):
+                for name in sorted(skins[skin]):
                     node = self._doc.createElement(nodename)
                     node.setAttribute('skinname', skin)
                     node.setAttribute('manager', name)
