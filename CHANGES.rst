@@ -1,14 +1,21 @@
 Changelog
 =========
 
+2.0.8 (unreleased)
+------------------
 
-2.0.7 (unreleased)
+- Rename ``_uncatched_errors`` to ``_exceptions_handled_elsewhere``
+  [jean]
+
+2.0.7 (2015-03-13)
 ------------------
 
 - flake8 fixes and general cleanup.
   [gforcada]
-- Rename ``_uncatched_errors`` to ``_exceptions_handled_elsewhere``
-  [jean]
+
+- Sort skins and viewletmanagers on exports to create stable exports.
+  This fixes: https://github.com/plone/plone.app.viewletmanager/issues/7
+  [gforcada]
 
 2.0.6 (2014-07-10)
 ------------------
