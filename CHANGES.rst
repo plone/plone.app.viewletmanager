@@ -8,6 +8,10 @@ Changelog
 - flake8 fixes and general cleanup.
   [gforcada]
 
+- Sort skins and viewletmanagers on exports to create stable exports.
+  This fixes: https://github.com/plone/plone.app.viewletmanager/issues/7
+  [gforcada]
+
 
 2.0.6 (2014-07-10)
 ------------------
