@@ -12,6 +12,8 @@ Changelog
 
 - Nothing changed yet.
 
+- Rename ``_uncatched_errors`` to ``_exceptions_handled_elsewhere``
+  [jean]
 
 2.0.7 (2015-03-13)
 ------------------
