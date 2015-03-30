@@ -7,7 +7,8 @@ Changelog
 
 - flake8 fixes and general cleanup.
   [gforcada]
-
+- Rename ``_uncatched_errors`` to ``_exceptions_handled_elsewhere``
+  [jean]
 
 2.0.6 (2014-07-10)
 ------------------
