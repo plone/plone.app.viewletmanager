@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.8 (unreleased)
+2.0.8 (2015-04-29)
 ------------------
 
 - Rename ``_uncatched_errors`` to ``_exceptions_handled_elsewhere``
