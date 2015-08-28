@@ -1,6 +1,6 @@
 <div class="managedViewlets" tal:attributes="id view/normalized_name"
      i18n:domain="plone">
-    <dl class="viewletmanager" tal:define="auth_token context/@@authenticator/token">
+    <dl class="viewletmanager" tal:define="auth_token context/@@authenticator/token | nothing">
         <dt>
             ViewletManager: <span tal:content="view/name">ViewletManager name</span>
             (<span tal:content="view/interface" />)
