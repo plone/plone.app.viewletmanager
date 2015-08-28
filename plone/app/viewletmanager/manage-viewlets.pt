@@ -6,22 +6,6 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
 
-      <metal:css_slot fill-slot="style_slot">
-            <style type="text/css" media="screen">
-                .viewletmanager, .viewlet { display: block; margin: .5em;}
-                .viewletmanager { border: 1px solid #000;}
-                .viewletmanager > dt { border-bottom: 1px solid #000; }
-                .viewletmanager > dt, .viewlet > dt { font-size: .8em; background: #EEE; padding: .5em; }
-                .viewlet { border: 1px solid #999; }
-                .viewlet > dt { border-bottom: 1px solid #999; }
-                .viewlet > dt > a.show { display: none !important; }
-                .viewlet > dt > a.hide { display: inline !important; }
-                .viewletmanager dd, .viewlet dd { padding: .5em; }
-                .viewlet.hiddenViewlet > dt > a.hide { display:none !important; }
-                .viewlet.hiddenViewlet > dt > a.show { display: inline !important; }
-            </style>
-      </metal:css_slot>
-
       <metal:javascript_head_slot fill-slot="javascript_head_slot">
           <script type="text/javascript" charset="utf-8">
               (function($) {
@@ -39,6 +23,21 @@
 
 <body>
 <metal:main fill-slot="main">
+
+    <style type="text/css" media="screen">
+        .viewletmanager, .viewlet { display: block; margin: .5em;}
+        .viewletmanager { border: 1px solid #000;}
+        .viewletmanager > dt { border-bottom: 1px solid #000; }
+        .viewletmanager > dt, .viewlet > dt { font-size: .8em; background: #EEE; padding: .5em; }
+        .viewlet { border: 1px solid #999; }
+        .viewlet > dt { border-bottom: 1px solid #999; }
+        .viewlet > dt > a.show { display: none !important; }
+        .viewlet > dt > a.hide { display: inline !important; }
+        .viewletmanager dd, .viewlet dd { padding: .5em; }
+        .viewlet.hiddenViewlet { opacity: 0.5; }
+        .viewlet.hiddenViewlet > dt > a.hide { display:none !important; }
+        .viewlet.hiddenViewlet > dt > a.show { display: inline !important; }
+    </style>
 
     <div tal:replace="structure provider:plone.abovecontenttitle" />
 

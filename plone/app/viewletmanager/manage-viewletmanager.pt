@@ -1,6 +1,6 @@
 <div class="managedViewlets" tal:attributes="id view/normalized_name"
      i18n:domain="plone">
-    <dl class="viewletmanager">
+    <dl class="viewletmanager" tal:define="auth_token context/@@authenticator/token | nothing">
         <dt>
             ViewletManager: <span tal:content="view/name">ViewletManager name</span>
             (<span tal:content="view/interface" />)
@@ -13,20 +13,19 @@
                     (<span tal:replace="viewlet/index">Index</span>)
                     <a class="up"
                        tal:condition="viewlet/up_url | nothing"
-                       tal:attributes="href viewlet/up_url">&#9650;</a>
+                       tal:attributes="href string:${viewlet/up_url}&_authenticator=${auth_token}">&#9650;</a>
                     <a class="down"
                        tal:condition="viewlet/down_url | nothing"
-                       tal:attributes="href viewlet/down_url">&#9660;</a>
+                       tal:attributes="href string:${viewlet/down_url}&_authenticator=${auth_token}">&#9660;</a>
                     <a class="hide"
                        i18n:translate="label_hide_item"
-                       tal:attributes="href viewlet/hide_url">Hide</a>
+                       tal:attributes="href string:${viewlet/hide_url}&_authenticator=${auth_token}">Hide</a>
                     <a class="show"
                        i18n:translate="label_show_item"
-                       tal:attributes="href viewlet/show_url">Show</a>
+                       tal:attributes="href string:${viewlet/show_url}&_authenticator=${auth_token}">Show</a>
                 </dt>
-                <dd>
+                <dd class="clearfix">
                     <div tal:replace="structure viewlet/content"></div>
-                    <div class="visualClear"><!-- --></div>
                 </dd>
             </dl>
         </dd>
