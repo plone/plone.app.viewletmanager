@@ -2,11 +2,11 @@ Changelog
 =========
 
 
-2.0.9 (unreleased)
+2.0.9 (2015-09-07)
 ------------------
 
-- Nothing changed yet.
-
+- Fix manage-viewlets for Plone 5
+  [pbauer]
 
 2.0.8 (2015-04-29)
 ------------------
