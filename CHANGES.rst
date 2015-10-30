@@ -5,7 +5,13 @@ Changelog
 2.0.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+New:
+
+- *add item here*
+
+Fixes:
+
+- *add item here*
 
 
 2.0.9 (2015-09-07)
