@@ -2,11 +2,11 @@
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IViewletSettingsStorage)
 class ViewletSettingsStorage(Persistent):
-    implements(IViewletSettingsStorage)
 
     def __init__(self):
         self._order = PersistentDict()

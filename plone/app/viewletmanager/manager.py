@@ -17,7 +17,7 @@ from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
 from zope.contentprovider.interfaces import IContentProvider
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
 
@@ -194,8 +194,8 @@ class OrderedViewletManager(BaseOrderedViewletManager):
             return BaseOrderedViewletManager.render(self)
 
 
+@implementer(IViewletManagementView)
 class ManageViewlets(BrowserView):
-    implements(IViewletManagementView)
 
     def show(self, manager, viewlet):
         storage = getUtility(IViewletSettingsStorage)
