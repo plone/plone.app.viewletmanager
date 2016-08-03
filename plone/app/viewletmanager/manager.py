@@ -2,15 +2,14 @@
 from AccessControl.ZopeGuards import guarded_hasattr
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from ZODB.POSException import ConflictError
-from ZPublisher.Publish import Retry
 from cgi import parse_qs
 from logging import getLogger
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from urllib import urlencode
+from ZODB.POSException import ConflictError
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -20,6 +19,7 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import implementer
 from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
+from ZPublisher.Publish import Retry
 
 import traceback
 
@@ -97,12 +97,14 @@ class BaseOrderedViewletManager(object):
                 return self.template(viewlets=self.viewlets)
             except self._exceptions_handled_elsewhere:
                 raise
-            except Exception, e:
-                trace = traceback.format_exc()
-                name = self.__name__
-                msg = "rendering of %s fails: %s\n%s\n"
-                logger.error(msg % (name, e, trace))
-                return u"error while rendering %s\n" % name
+            except Exception:
+                logger.exception(
+                    'Error while rendering viewlet-manager "{0}" '
+                    'using a template'.format(self.__name__)
+                )
+                return u'error while rendering viewlet-manager {0}\n'.format(
+                    self.__name__
+                )
         else:
             html = []
             for viewlet in self.viewlets:
@@ -110,13 +112,17 @@ class BaseOrderedViewletManager(object):
                     html.append(viewlet.render())
                 except self._exceptions_handled_elsewhere:
                     raise
-                except Exception, e:
-                    name = self.__name__
-                    trace = traceback.format_exc()
-                    vname = viewlet.__name__
-                    msg = "rendering of %s in %s fails: %s\n%s\n"
-                    logger.error(msg % (name, vname, e, trace))
-                    html.append(u"error while rendering %s\n" % vname)
+                except Exception:
+                    logger.exception(
+                        'Error while rendering viewlet-manager={0}, '
+                        'viewlet={1}'.format(
+                            self.__name__,
+                            viewlet.__name__
+                        )
+                    )
+                    html.append(
+                        u'error while rendering {0}\n'.format(viewlet.__name__)
+                    )
             return u"\n".join(html)
 
 
@@ -171,12 +177,12 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                 else:
                     options['content'] = u""
                 if index > 0:
-                    prev_viewlet = viewlets[index-1][0]
+                    prev_viewlet = viewlets[index - 1][0]
                     query = {'move_above': "%s;%s" % (viewlet_id,
                                                       prev_viewlet)}
                     options['up_url'] = query_tmpl % urlencode(query)
                 if index < (len(viewlets) - 1):
-                    next_viewlet = viewlets[index+1][0]
+                    next_viewlet = viewlets[index + 1][0]
                     query = {'move_below': "%s;%s" % (viewlet_id,
                                                       next_viewlet)}
                     options['down_url'] = query_tmpl % urlencode(query)
@@ -254,7 +260,7 @@ class ManageViewlets(BrowserView):
         viewlet_index = order.index(viewlet)
         del order[viewlet_index]
         dest_index = order.index(dest)
-        order.insert(dest_index+1, viewlet)
+        order.insert(dest_index + 1, viewlet)
         storage.setOrder(manager, skinname, order)
 
     def __call__(self):
