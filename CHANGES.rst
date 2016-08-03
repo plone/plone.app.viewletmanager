@@ -13,6 +13,7 @@ Fixes:
 
 - Use zope.interface decorator.
   [gforcada]
+
 - Correctly log exception if viewlet rendering failed.
   [jensens]
 

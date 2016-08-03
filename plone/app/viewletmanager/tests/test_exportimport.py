@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 from OFS.Folder import Folder
+from persistent.dict import PersistentDict
+from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
+from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
+from plone.app.viewletmanager.exportimport.storage import ViewletSettingsStorageNodeAdapter
+from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from plone.app.viewletmanager.storage import ViewletSettingsStorage
+from plone.app.viewletmanager.testing import PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
 from Products.CMFPlone.exportimport.tests.base import BodyAdapterTestCase
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
-from persistent.dict import PersistentDict
-from plone.app.viewletmanager.exportimport.storage import \
-    ViewletSettingsStorageNodeAdapter
-from plone.app.viewletmanager.exportimport.storage import \
-    exportViewletSettingsStorage
-from plone.app.viewletmanager.exportimport.storage import \
-    importViewletSettingsStorage
-from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
-from plone.app.viewletmanager.storage import ViewletSettingsStorage
-from plone.app.viewletmanager.testing import \
-    PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
 from xml.parsers.expat import ExpatError
 from zope.component import getUtility
 
