@@ -8,7 +8,7 @@ from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from urllib import urlencode
+from six.moves.urllib.parse import urlencode
 from ZODB.POSException import ConflictError
 from zope.component import getAdapters
 from zope.component import getMultiAdapter

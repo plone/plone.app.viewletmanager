@@ -124,7 +124,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
         """
         output = self._doc.createElement('object')
         for nodename in ('order', 'hidden'):
-            skins = getattr(self.context, '_'+nodename)
+            skins = getattr(self.context, '_' + nodename)
             for skin in sorted(skins):
                 for name in sorted(skins[skin]):
                     node = self._doc.createElement(nodename)
@@ -158,15 +158,13 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 )
             skinname = child.getAttribute('skinname')
             manager = child.getAttribute('manager')
-            skins = getattr(storage, '_'+nodename)
-
-            all_skins = tuple(set(
-                storage._hidden.keys() +
-                storage._order.keys() +
-                self.skins
-            ))
+            skins = getattr(storage, '_' + nodename)
 
             if skinname == '*':
+                all_skins = set(storage._hidden.keys())
+                all_skins.update(storage._order.keys())
+                all_skins.update(self.skins)
+
                 for skinname in all_skins:
                     values = []
                     if skinname in skins and not purgeChild:
@@ -176,7 +174,6 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                         storage.setOrder(manager, skinname, tuple(values))
                     elif nodename == 'hidden':
                         storage.setHidden(manager, skinname, tuple(values))
-
             else:
                 values = []
                 if skinname in skins and not purgeChild:
@@ -192,7 +189,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                             if oldvalues.index(value) == 0:
                                 viewlet.setAttribute('insert-before', '*')
                             else:
-                                pos = oldvalues[oldvalues.index(value)-1]
+                                pos = oldvalues[oldvalues.index(value) - 1]
                                 viewlet.setAttribute('insert-after', pos)
                             child.appendChild(viewlet)
                 values = self._computeValues(values, child)
@@ -242,7 +239,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
                 else:
                     try:
                         index = values.index(insert_after)
-                        values.insert(index+1, viewlet_name)
+                        values.insert(index + 1, viewlet_name)
                         continue
                     except ValueError:
                         pass
