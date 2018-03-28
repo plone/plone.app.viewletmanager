@@ -4,6 +4,7 @@ from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
 from cgi import parse_qs
 from logging import getLogger
+from operator import itemgetter
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
@@ -85,8 +86,12 @@ class BaseOrderedViewletManager(object):
 
         # then sort the remaining ones
         # Copied from Five
-        remaining = sorted(name_map.items(),
-                           lambda x, y: cmp(aq_base(x[1]), aq_base(y[1])))
+        try:
+            # Try to sort by viewlet instances
+            remaining = sorted(viewlets, key=itemgetter(1))
+        except TypeError:
+            # Fall back to viewlet names
+            remaining = sorted(viewlets, key=itemgetter(0))
 
         # return both together
         return result + remaining
