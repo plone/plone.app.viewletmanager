@@ -93,8 +93,8 @@ class BaseOrderedViewletManager(object):
             # Fall back to viewlet names
             remaining = sorted(viewlets, key=itemgetter(0))
 
-        # return both together
-        return result + remaining
+        # return both together remove duplicates, keep order
+        return list(dict.fromkeys(result + remaining))
 
     def render(self):
         if self.template:
