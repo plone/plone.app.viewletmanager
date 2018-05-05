@@ -4,7 +4,6 @@ from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
 from cgi import parse_qs
 from logging import getLogger
-from operator import itemgetter
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
@@ -21,8 +20,6 @@ from zope.interface import implementer
 from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
 from ZPublisher.Publish import Retry
-
-import traceback
 
 
 logger = getLogger('plone.app.viewletmanager')
@@ -84,17 +81,9 @@ class BaseOrderedViewletManager(object):
                 result.append((name, name_map[name]))
                 del name_map[name]
 
-        # then sort the remaining ones
-        # Copied from Five
-        try:
-            # Try to sort by viewlet instances
-            remaining = sorted(viewlets, key=itemgetter(1))
-        except TypeError:
-            # Fall back to viewlet names
-            remaining = sorted(viewlets, key=itemgetter(0))
-
-        # return both together remove duplicates, keep order
-        return list(dict.fromkeys(result + remaining))
+        remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
+        # return both together
+        return result + remaining
 
     def render(self):
         if self.template:
