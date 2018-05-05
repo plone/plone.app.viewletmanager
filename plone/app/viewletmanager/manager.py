@@ -21,8 +21,6 @@ from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
 from ZPublisher.Publish import Retry
 
-import traceback
-
 
 logger = getLogger('plone.app.viewletmanager')
 
@@ -83,11 +81,7 @@ class BaseOrderedViewletManager(object):
                 result.append((name, name_map[name]))
                 del name_map[name]
 
-        # then sort the remaining ones
-        # Copied from Five
-        remaining = sorted(name_map.items(),
-                           lambda x, y: cmp(aq_base(x[1]), aq_base(y[1])))
-
+        remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
         # return both together
         return result + remaining
 

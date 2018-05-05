@@ -2,7 +2,7 @@
 We need a storage for the viewlet settings.
 
     >>> from zope.component import provideUtility, provideAdapter, getAdapters
-    >>> from zope.interface import implements, Interface
+    >>> from zope.interface import implementer, Interface
     >>> from plone.app.viewletmanager.storage import ViewletSettingsStorage
     >>> from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 
@@ -20,8 +20,8 @@ in Plone.
 
     >>> # yeah, yeah, we still need acquisition here and an Application
     >>> from Acquisition import Explicit
-    >>> class Content(Explicit):
-    ...     implements(Interface)
+    >>> @implementer(Interface)
+    ... class Content(Explicit):
     ...
     ...     def getCurrentSkinName(self):
     ...         return getattr(self, 'skin', 'Plone Default')
@@ -60,8 +60,10 @@ Now we need some dummy viewlets.
 
     >>> from zope.viewlet.interfaces import IViewlet
     >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-    >>> class BaseViewlet(Explicit):
-    ...     implements(IViewlet)
+    >>> from functools import total_ordering
+    >>> @implementer(IViewlet)
+    ... @total_ordering
+    ... class BaseViewlet(Explicit):
     ...
     ...     __allow_access_to_unprotected_subobjects__ = 1
     ...
@@ -75,6 +77,12 @@ Now we need some dummy viewlets.
     ...
     ...     def render(self):
     ...         return self.name
+    ...
+    ...     def __eq__(self, other):
+    ...         return self.name == other.name
+    ...
+    ...     def __lt__(self, other):
+    ...         return self.name < other.name
 
     >>> class FirstViewlet(BaseViewlet):
     ...     name = u"first"
