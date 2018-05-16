@@ -17,6 +17,7 @@ New features:
 Bug fixes:
 
 - More Python 2 / 3 compatibility [ale-rt, pbauer]
+- Start making code flake8 compliant [ale-rt]
 
 
 2.0.11 (2018-01-30)
