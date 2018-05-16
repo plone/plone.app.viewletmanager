@@ -25,8 +25,8 @@ COMMON_SETUP_HIDDEN = {
     'light': {'top': ('two', )},
     }
 
-_VIEWLETS_XML = """\
-<?xml version="1.0"?>
+_VIEWLETS_XML = b"""\
+<?xml version="1.0" encoding="utf-8"?>
 <object>
  <order manager="top" skinname="basic">
   <viewlet name="one"/>
