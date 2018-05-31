@@ -15,7 +15,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Sort viewlets by key instead of with a ``cmp`` function.
+  [ale-rt, pbauer]
 
 
 2.0.11 (2018-01-30)
