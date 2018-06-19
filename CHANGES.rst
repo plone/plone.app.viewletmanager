@@ -5,14 +5,6 @@ Changelog
 2.0.12 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Sort viewlets by key instead of with a ``cmp`` function.
