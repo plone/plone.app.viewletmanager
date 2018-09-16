@@ -4,6 +4,7 @@ from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
 from cgi import parse_qs
 from logging import getLogger
+from operator import itemgetter
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
@@ -81,7 +82,10 @@ class BaseOrderedViewletManager(object):
                 result.append((name, name_map[name]))
                 del name_map[name]
 
-        remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
+        try:
+            remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
+        except:
+            remaining = sorted(name_map.items(), key=itemgetter(0))
         # return both together
         return result + remaining
 
