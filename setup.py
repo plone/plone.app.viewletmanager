@@ -14,6 +14,7 @@ extras_require = {
     'test': [
         'Products.CMFPlone',
         'plone.app.testing',
+        'six',
         'zope.publisher',
     ]
 }
@@ -43,12 +44,15 @@ setup(
         'Framework :: Plone',
         "Framework :: Plone :: 5.0",
         "Framework :: Plone :: 5.1",
+        "Framework :: Plone :: 5.2",
         'Framework :: Zope2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     keywords='',
     author='Plone Foundation',
