@@ -236,8 +236,10 @@ class ManageViewlets(BrowserView):
 
         # then sort the remaining ones
         # Copied from Five
-        remaining = sorted(name_map.items(),
-                           lambda x, y: cmp(aq_base(x[1]), aq_base(y[1])))
+        try:
+            remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
+        except:
+            remaining = sorted(name_map.items(), key=itemgetter(0))
 
         return [x[0] for x in result + remaining]
 

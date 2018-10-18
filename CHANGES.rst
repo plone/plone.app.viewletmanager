@@ -24,7 +24,7 @@ Bug fixes:
 
 - Tests are compliant with Products.GenericSetup >= 2.0
 
-- Fix TypeError when comparing some viewlet-types in py3.
+- Fix TypeErrors when comparing some viewlet-types in py3.
   [pbauer]
 
 
