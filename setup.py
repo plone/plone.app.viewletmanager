@@ -52,7 +52,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    keywords='',
+    keywords='viewlets',
     author='Plone Foundation',
     author_email='plone-developers@lists.sourceforge.net',
     url='https://pypi.org/project/plone.app.viewletmanager',
