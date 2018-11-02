@@ -10,10 +10,6 @@ Breaking changes:
 - Discontinue Python 2.6 support.
   [jensens]
 
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - More Python 2 / 3 compatibility
