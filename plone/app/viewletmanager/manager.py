@@ -20,7 +20,7 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import implementer
 from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
-from ZPublisher.Publish import Retry
+from ZPublisher import Retry
 
 
 logger = getLogger('plone.app.viewletmanager')
