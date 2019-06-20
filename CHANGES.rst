@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.1 (2019-06-19)
+------------------
+
+Bug fixes:
+
+
+- Fix deprecation warning importing ZPublisher.Retry (#19)
+
+
 3.0.0 (2018-11-02)
 ------------------
 
