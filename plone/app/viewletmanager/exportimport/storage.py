@@ -26,14 +26,14 @@ Hide a viewlet (here we hide the colophon for 'My Custom Theme')::
       <viewlet name="plone.colophon"/>
     </hidden>
 
-Unhide a specific viewlet using the remove attribute::
+Unhide (or show) a specific viewlet using the remove attribute::
 
     <hidden manager="plone.portalfooter" skinname="My
     Custom Theme">
       <viewlet name="plone.colophon" remove="True"/>
     </hidden>
 
-Unhide all viewlets for a given manager using the purge attribute::
+Unhide (or show) all viewlets for a given manager using the purge attribute::
 
     <hidden manager="plone.portalfooter" skinname="My
     Custom Theme" purge="True"/>
@@ -45,7 +45,7 @@ Hide a viewlet for all skins::
     </hidden>
 
 Pro Tip: Using skinname="*" currently only works if the manager has
-already been registered in each skin (see Plone Trac ticket #7166)
+already been registered in each skin.
 
 .. These docs are used in c.developermanual
 .. original content from http://www.sixfeetup.com/company/technologies/plone-content-management-new/quick-reference-cards/swag/swag-images-files/generic_setup.pdf
