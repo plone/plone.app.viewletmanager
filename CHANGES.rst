@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.1.2 (2021-06-30)
+------------------
+
+Bug fixes:
+
+
+- tweak wording ("unhide" vs. "show" viewlets), remove old Trac reference (#23)
+
+
 3.1.1 (2020-04-20)
 ------------------
 
