@@ -50,7 +50,7 @@
 
     <div class="documentDescription"
        i18n:translate="label_description">
-        Description
+        Summary
     </div>
 
     <div tal:replace="structure provider:plone.abovecontentbody" />
