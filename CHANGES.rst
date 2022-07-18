@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+3.1.3 (2022-07-18)
+------------------
+
+Bug fixes:
+
+
+- Change default message for i18n msgid
+  [erral] (#25)
+
+
 3.1.2 (2021-06-30)
 ------------------
 
