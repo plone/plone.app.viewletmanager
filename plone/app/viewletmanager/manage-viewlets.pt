@@ -14,7 +14,7 @@
                             e.preventDefault();
                             var url = $(e.currentTarget).attr('href'),
                                 vm = $(e.delegateTarget);
-                            $(vm).load(url + ' #' + $(vm).attr('id') + '.managedViewlets > dl');
+                            $(vm).load(url + ' #' + $(vm).attr('id') + '.managedViewlets > div');
                       });
                   });
               })(jQuery);
@@ -25,43 +25,46 @@
 <metal:main fill-slot="main">
 
     <style type="text/css" media="screen">
-        .viewletmanager, .viewlet { display: block; margin: .5em;}
-        .viewletmanager { border: 1px solid #000;}
-        .viewletmanager > dt { border-bottom: 1px solid #000; }
-        .viewletmanager > dt, .viewlet > dt { font-size: .8em; background: #EEE; padding: .5em; }
-        .viewlet { border: 1px solid #999; }
-        .viewlet > dt { border-bottom: 1px solid #999; }
-        .viewlet > dt > a.show { display: none !important; }
-        .viewlet > dt > a.hide { display: inline !important; }
-        .viewletmanager dd, .viewlet dd { padding: .5em; }
-        .viewlet.hiddenViewlet { opacity: 0.5; }
-        .viewlet.hiddenViewlet > dt > a.hide { display:none !important; }
-        .viewlet.hiddenViewlet > dt > a.show { display: inline !important; }
+        #portal-top { margin-top: 1em; }
+        #portal-footer-wrapper { background-color: unset; color: unset; text-align: left; padding: 0; }
+        #plone-toolbar { padding-top: 1em; }        
+        #plone-toolbar .card-header { color: #000; }
+        #plone-toolbar .card-body { background-color: #333; }
+        #plone-toolbar .d-flex { display: block; }
+        #plone-toolbar .btn { margin: 5px 5px 0 0; }
     </style>
 
-    <div tal:replace="structure provider:plone.abovecontenttitle" />
+    <div class="xcontainer">
 
-    <h1 class="documentFirstHeading"
-        i18n:translate="label_title">
-      Title
-    </h1>
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
 
-    <div tal:replace="structure provider:plone.belowcontenttitle" />
+        <div class="container my5">
+          <h1 class="" i18n:translate="label_title">
+              Title
+          </h1>
+        </div>
 
-    <div class="documentDescription"
-       i18n:translate="label_description">
-        Summary
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <div class="container my-5">
+          <div class="lead" i18n:translate="label_description">
+              Summary
+          </div>
+        </div>
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+        <div class="container my-5">
+          <div id="content-core">
+              <p>
+                  This item does not have any body text, click the edit tab to change it.
+              </p>
+          </div>
+        </div>
+
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+    
     </div>
-
-    <div tal:replace="structure provider:plone.abovecontentbody" />
-
-    <div id="content-core">
-        <p>
-            This item does not have any body text, click the edit tab to change it.
-        </p>
-    </div>
-
-    <div tal:replace="structure provider:plone.belowcontentbody" />
 
 </metal:main>
 

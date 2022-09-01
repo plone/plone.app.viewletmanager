@@ -1,33 +1,52 @@
-<div class="managedViewlets" tal:attributes="id view/normalized_name"
-     i18n:domain="plone">
-    <dl class="viewletmanager" tal:define="auth_token context/@@authenticator/token | nothing">
-        <dt>
-            ViewletManager: <span tal:content="view/name">ViewletManager name</span>
-            (<span tal:content="view/interface" />)
-        </dt>
-        <dd>
-            <dl tal:repeat="viewlet options/viewlets"
-                tal:attributes="class python:'viewlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
-                <dt>
-                    Viewlet: <span tal:replace="viewlet/name">Viewlet name</span>
-                    (<span tal:replace="viewlet/index">Index</span>)
-                    <a class="up"
-                       tal:condition="viewlet/up_url | nothing"
-                       tal:attributes="href string:${viewlet/up_url}&_authenticator=${auth_token}">&#9650;</a>
-                    <a class="down"
-                       tal:condition="viewlet/down_url | nothing"
-                       tal:attributes="href string:${viewlet/down_url}&_authenticator=${auth_token}">&#9660;</a>
-                    <a class="hide"
-                       i18n:translate="label_hide_item"
-                       tal:attributes="href string:${viewlet/hide_url}&_authenticator=${auth_token}">Hide</a>
-                    <a class="show"
-                       i18n:translate="label_show_item"
-                       tal:attributes="href string:${viewlet/show_url}&_authenticator=${auth_token}">Show</a>
-                </dt>
-                <dd class="clearfix">
-                    <div tal:replace="structure viewlet/content"></div>
-                </dd>
-            </dl>
-        </dd>
-    </dl>
+<div class="container mb-3">
+
+  <div class="managedViewlets" tal:attributes="id view/normalized_name" i18n:domain="plone">
+
+    <div class="card" tal:define="auth_token context/@@authenticator/token | nothing">
+
+      <div class="card-header">
+        ViewletManager <span class="text-muted" tal:content="view/name">ViewletManager name</span> (<span tal:content="view/interface" />)
+      </div>
+
+      <div class="card-body">
+
+        <div tal:repeat="viewlet options/viewlets" tal:attributes="class python:'viewlet %s' % (viewlet['hidden'] and 'hiddenViewlet' or '')">
+
+          <div class="card mb-3">
+
+            <div class="card-header d-flex">
+
+              <div class="me-auto">
+                Viewlet <span class="text-muted" tal:content="viewlet/name">Viewlet name</span> (<span tal:replace="viewlet/index">Index</span>)
+              </div>
+
+              <a class="btn btn-sm btn-outline-primary up mx-1 text-decoration-none" tal:condition="viewlet/up_url | nothing" tal:attributes="href string:${viewlet/up_url}&_authenticator=${auth_token}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-short" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"/>
+                </svg>
+              </a>
+              <a class="btn btn-sm btn-outline-primary down mx-1 text-decoration-none" tal:condition="viewlet/down_url | nothing" tal:attributes="href string:${viewlet/down_url}&_authenticator=${auth_token}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"/>
+                </svg>
+              </a>
+              <a class="btn btn-sm btn-outline-primary hide mx-1 text-decoration-none" i18n:translate="label_hide_item" tal:attributes="href string:${viewlet/hide_url}&_authenticator=${auth_token}">Hide</a>
+              <a class="btn btn-sm btn-outline-primary show mx-1 text-decoration-none" i18n:translate="label_show_item" tal:attributes="href string:${viewlet/show_url}&_authenticator=${auth_token}">Show</a>
+
+            </div>
+
+            <div class="card-body">
+              <div tal:replace="structure viewlet/content"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
