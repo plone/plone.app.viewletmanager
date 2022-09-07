@@ -8,6 +8,17 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0b1 (2022-09-07)
+--------------------
+
+Breaking changes:
+
+
+- Update markup due to disabled Diazo rules for this view.
+  This change breaks compatibility with Plone 5 because it makes it look ugly.
+  [santonelli] (#26)
+
+
 3.1.3 (2022-07-18)
 ------------------
 
