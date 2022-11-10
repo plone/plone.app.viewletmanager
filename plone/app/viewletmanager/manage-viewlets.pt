@@ -6,32 +6,21 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
 
-      <metal:javascript_head_slot fill-slot="javascript_head_slot">
-          <script type="text/javascript" charset="utf-8">
-              (function($) {
-                  $(function() {
-                      $('.managedViewlets').on('click', '.up, .down, .hide, .show', function (e) {
-                            e.preventDefault();
-                            var url = $(e.currentTarget).attr('href'),
-                                vm = $(e.delegateTarget);
-                            $(vm).load(url + ' #' + $(vm).attr('id') + '.managedViewlets > div');
-                      });
-                  });
-              })(jQuery);
-          </script>
-      </metal:javascript_head_slot>
-
 <body>
+
 <metal:main fill-slot="main">
 
     <style type="text/css" media="screen">
         #portal-top { margin-top: 1em; }
         #portal-footer-wrapper { background-color: unset; color: unset; text-align: left; padding: 0; }
-        #plone-toolbar { padding-top: 1em; }        
+        #plone-toolbar { padding-top: 1em; }
         #plone-toolbar .card-header { color: #000; }
         #plone-toolbar .card-body { background-color: #333; }
         #plone-toolbar .d-flex { display: block; }
         #plone-toolbar .btn { margin: 5px 5px 0 0; }
+        .hiddenViewlet .card {
+            --bs-card-border-color: var(--bs-gray-300);
+        }
     </style>
 
     <div class="xcontainer">
@@ -63,7 +52,7 @@
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
-    
+
     </div>
 
 </metal:main>
