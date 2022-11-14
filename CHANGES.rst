@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0 (2022-11-14)
+------------------
+
+Bug fixes:
+
+
+- Improve ``manage-viewlets`` usability.
+  [petschki] (#27)
+
+
 4.0.0b1 (2022-09-07)
 --------------------
 
