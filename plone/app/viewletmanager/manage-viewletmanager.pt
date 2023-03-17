@@ -1,46 +1,86 @@
 <div class="container mb-3"
-     tal:define="manager_id view/normalized_name">
+     tal:define="
+       manager_id view/normalized_name;
+     "
+>
 
-  <div class="managedViewlets" id="${manager_id}" i18n:domain="plone">
+  <div class="managedViewlets"
+       id="${manager_id}"
+       i18n:domain="plone"
+  >
 
-    <div class="card" tal:define="auth_token context/@@authenticator/token | nothing">
+    <div class="card"
+         tal:define="
+           auth_token context/@@authenticator/token | nothing;
+         "
+    >
 
       <div class="card-header">
-        ViewletManager <span class="text-muted" tal:content="view/name">ViewletManager name</span> (<span tal:content="view/interface" />)
+        ViewletManager
+        <span class="text-muted"
+              tal:content="view/name"
+        >ViewletManager name</span>
+        (<span tal:content="view/interface"></span>)
       </div>
 
       <div class="card-body">
 
-        <div tal:repeat="viewlet options/viewlets" class="${python:'viewlet %s' % ('hiddenViewlet' if viewlet['hidden'] else '')}">
+        <div class="${python:'viewlet %s' % ('hiddenViewlet' if viewlet['hidden'] else '')}"
+             tal:repeat="viewlet options/viewlets"
+        >
 
           <div class="card mb-3">
 
             <div class="card-header d-flex">
 
               <div class="me-auto">
-                Viewlet <span class="text-muted" tal:content="viewlet/name">Viewlet name</span> (<span tal:replace="viewlet/index">Index</span>)
+                Viewlet
+                <span class="text-muted"
+                      tal:content="viewlet/name"
+                >Viewlet name</span>
+                (<span tal:replace="viewlet/index">Index</span>)
               </div>
 
               <a class="btn btn-sm btn-outline-primary mx-1 text-decoration-none pat-inject"
                  href="${viewlet/up_url}&_authenticator=${auth_token}#${manager_id}"
-                 tal:condition="viewlet/up_url | nothing">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-short" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"/>
+                 tal:condition="viewlet/up_url | nothing"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-arrow-up-short"
+                     fill="currentColor"
+                     height="16"
+                     viewbox="0 0 16 16"
+                     width="16"
+                >
+                  <path d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"
+                        fill-rule="evenodd"
+                  ></path>
                 </svg>
               </a>
               <a class="btn btn-sm btn-outline-primary mx-1 text-decoration-none pat-inject"
                  href="${viewlet/down_url}&_authenticator=${auth_token}#${manager_id}"
-                 tal:condition="viewlet/down_url | nothing">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"/>
+                 tal:condition="viewlet/down_url | nothing"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-arrow-down-short"
+                     fill="currentColor"
+                     height="16"
+                     viewbox="0 0 16 16"
+                     width="16"
+                >
+                  <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"
+                        fill-rule="evenodd"
+                  ></path>
                 </svg>
               </a>
               <a class="btn btn-sm btn-outline-primary mx-1 text-decoration-none pat-inject ${python:'active' if not viewlet['hidden'] else ''}"
                  href="${viewlet/hide_url}&_authenticator=${auth_token}#${manager_id}"
-                 i18n:translate="label_hide_item">Hide</a>
+                 i18n:translate="label_hide_item"
+              >Hide</a>
               <a class="btn btn-sm btn-outline-primary mx-1 text-decoration-none pat-inject ${python:'active' if viewlet['hidden'] else ''}"
                  href="${viewlet/show_url}&_authenticator=${auth_token}#${manager_id}"
-                 i18n:translate="label_show_item">Show</a>
+                 i18n:translate="label_show_item"
+              >Show</a>
 
             </div>
 
