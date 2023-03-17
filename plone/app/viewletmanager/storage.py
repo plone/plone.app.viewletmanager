@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage

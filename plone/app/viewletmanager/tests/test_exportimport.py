@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from persistent.dict import PersistentDict
 from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage  # noqa: E501
 from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage  # noqa: E501
@@ -158,11 +157,11 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         fancydict = {'top': ('two', 'three', 'one')}
         hiddendict = {'top': ('two', )}
         self.assertEqual(type(obj._order), PersistentDict)
-        self.failUnless('fancy' in obj._order.keys())
+        self.assertTrue('fancy' in obj._order.keys())
         self.assertEqual(type(obj._order['fancy']), PersistentDict)
         self.assertEqual(dict(obj._order['fancy']), fancydict)
         self.assertEqual(type(obj._hidden), PersistentDict)
-        self.failUnless('light' in obj._hidden.keys())
+        self.assertTrue('light' in obj._hidden.keys())
         self.assertEqual(type(obj._hidden['light']), PersistentDict)
         self.assertEqual(dict(obj._hidden['light']), hiddendict)
 
@@ -560,7 +559,7 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ViewletSettingsStorageXMLAdapterTests))
-    suite.addTest(unittest.makeSuite(ExportViewletSettingsStorageTests))
-    suite.addTest(unittest.makeSuite(ImportViewletSettingsStorageTests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ViewletSettingsStorageXMLAdapterTests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ExportViewletSettingsStorageTests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ImportViewletSettingsStorageTests))
     return suite

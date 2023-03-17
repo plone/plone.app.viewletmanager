@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl.ZopeGuards import guarded_hasattr
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
@@ -8,8 +7,8 @@ from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from six.moves.urllib.parse import parse_qs
-from six.moves.urllib.parse import urlencode
+from urllib.parse import parse_qs
+from urllib.parse import urlencode
 from ZODB.POSException import ConflictError
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
@@ -26,7 +25,7 @@ from ZPublisher import Retry
 logger = getLogger('plone.app.viewletmanager')
 
 
-class BaseOrderedViewletManager(object):
+class BaseOrderedViewletManager:
 
     # Sometimes viewlets raise errors handled elsewhere -- e.g. for
     # embedded ploneformgen forms.
@@ -97,12 +96,10 @@ class BaseOrderedViewletManager(object):
                 raise
             except Exception:
                 logger.exception(
-                    'Error while rendering viewlet-manager "{0}" '
+                    'Error while rendering viewlet-manager "{}" '
                     'using a template'.format(self.__name__)
                 )
-                return u'error while rendering viewlet-manager {0}\n'.format(
-                    self.__name__
-                )
+                return f'error while rendering viewlet-manager {self.__name__}\n'
         else:
             html = []
             for viewlet in self.viewlets:
@@ -112,16 +109,16 @@ class BaseOrderedViewletManager(object):
                     raise
                 except Exception:
                     logger.exception(
-                        'Error while rendering viewlet-manager={0}, '
-                        'viewlet={1}'.format(
+                        'Error while rendering viewlet-manager={}, '
+                        'viewlet={}'.format(
                             self.__name__,
                             viewlet.__name__
                         )
                     )
                     html.append(
-                        u'error while rendering {0}\n'.format(viewlet.__name__)
+                        f'error while rendering {viewlet.__name__}\n'
                     )
-            return u"\n".join(html)
+            return "\n".join(html)
 
 
 class OrderedViewletManager(BaseOrderedViewletManager):
@@ -160,7 +157,7 @@ class OrderedViewletManager(BaseOrderedViewletManager):
             for index, (name, viewlet) in enumerate(viewlets):
                 if IAcquirer.providedBy(viewlet):
                     viewlet = viewlet.__of__(viewlet.context)
-                viewlet_id = "%s:%s" % (self.__name__, name)
+                viewlet_id = f"{self.__name__}:{name}"
                 options = {
                     'index': index,
                     'name': name,
@@ -173,15 +170,15 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                     viewlet.update()
                     options['content'] = viewlet.render()
                 else:
-                    options['content'] = u""
+                    options['content'] = ""
                 if index > 0:
                     prev_viewlet = viewlets[index - 1][0]
-                    query = {'move_above': "%s;%s" % (viewlet_id,
+                    query = {'move_above': "{};{}".format(viewlet_id,
                                                       prev_viewlet)}
                     options['up_url'] = query_tmpl % urlencode(query)
                 if index < (len(viewlets) - 1):
                     next_viewlet = viewlets[index + 1][0]
-                    query = {'move_below': "%s;%s" % (viewlet_id,
+                    query = {'move_below': "{};{}".format(viewlet_id,
                                                       next_viewlet)}
                     options['down_url'] = query_tmpl % urlencode(query)
                 results.append(options)

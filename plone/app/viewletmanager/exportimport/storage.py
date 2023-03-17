@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 The following examples would all be added into the viewlets.xml file.
 
@@ -109,7 +108,7 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
     __used_for__ = IViewletSettingsStorage
 
     def __init__(self, context, environ):
-        super(ViewletSettingsStorageNodeAdapter, self).__init__(context,
+        super().__init__(context,
                                                                 environ)
 
         self.skins = [
