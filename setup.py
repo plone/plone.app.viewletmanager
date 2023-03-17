@@ -59,6 +59,7 @@ setup(
     url="https://pypi.org/project/plone.app.viewletmanager",
     license="GPL version 2",
     packages=find_packages(),
+    python_requires=">=3.8",
     namespace_packages=[
         "plone",
         "plone.app",
