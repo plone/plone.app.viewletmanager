@@ -12,22 +12,18 @@ extras_require = {
     "test": [
         "Products.CMFPlone",
         "plone.app.testing",
-        "six",
+        "plone.testing",
         "zope.publisher",
     ]
 }
 
 install_requires = [
-    "Acquisition",
     "Products.GenericSetup",
-    "ZODB",
     "Zope",
+    "persistent",
     "plone.app.vocabularies",
     "setuptools",
-    "zope.component",
     "zope.contentprovider",
-    "zope.interface",
-    "zope.site",
     "zope.viewlet",
 ]
 
