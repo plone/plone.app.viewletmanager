@@ -82,7 +82,7 @@ class BaseOrderedViewletManager:
 
         try:
             remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
-        except:
+        except Exception:
             remaining = sorted(name_map.items(), key=itemgetter(0))
         # return both together
         return result + remaining
@@ -228,7 +228,7 @@ class ManageViewlets(BrowserView):
         # Copied from Five
         try:
             remaining = sorted(name_map.items(), key=lambda x: aq_base(x[1]))
-        except:
+        except Exception:
             remaining = sorted(name_map.items(), key=itemgetter(0))
 
         return [x[0] for x in result + remaining]
