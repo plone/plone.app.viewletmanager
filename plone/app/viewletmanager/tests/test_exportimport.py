@@ -20,13 +20,13 @@ import unittest
 
 
 COMMON_SETUP_ORDER = {
-    'basic': {'top': ('one', )},
-    'fancy': {'top': ('two', 'three', 'one')},
-    }
+    "basic": {"top": ("one",)},
+    "fancy": {"top": ("two", "three", "one")},
+}
 
 COMMON_SETUP_HIDDEN = {
-    'light': {'top': ('two', )},
-    }
+    "light": {"top": ("two",)},
+}
 
 _VIEWLETS_XML = b"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -134,11 +134,10 @@ _FRAGMENT7_IMPORT = """\
 
 
 class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
-
     layer = PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
 
     def setUp(self):
-        self.site = self.layer['portal']
+        self.site = self.layer["portal"]
         sm = self.site.getSiteManager()
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
 
@@ -153,31 +152,30 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
         return ViewletSettingsStorageNodeAdapter
 
     def _populate(self, obj):
-        obj.setOrder('top', 'fancy', ('two', 'three', 'one'))
-        obj.setOrder('top', 'basic', ('one', ))
-        obj.setHidden('top', 'light', ('two', ))
+        obj.setOrder("top", "fancy", ("two", "three", "one"))
+        obj.setOrder("top", "basic", ("one",))
+        obj.setHidden("top", "light", ("two",))
 
     def _verifyImport(self, obj):
-        fancydict = {'top': ('two', 'three', 'one')}
-        hiddendict = {'top': ('two', )}
+        fancydict = {"top": ("two", "three", "one")}
+        hiddendict = {"top": ("two",)}
         self.assertEqual(type(obj._order), PersistentDict)
-        self.assertTrue('fancy' in obj._order.keys())
-        self.assertEqual(type(obj._order['fancy']), PersistentDict)
-        self.assertEqual(dict(obj._order['fancy']), fancydict)
+        self.assertTrue("fancy" in obj._order.keys())
+        self.assertEqual(type(obj._order["fancy"]), PersistentDict)
+        self.assertEqual(dict(obj._order["fancy"]), fancydict)
         self.assertEqual(type(obj._hidden), PersistentDict)
-        self.assertTrue('light' in obj._hidden.keys())
-        self.assertEqual(type(obj._hidden['light']), PersistentDict)
-        self.assertEqual(dict(obj._hidden['light']), hiddendict)
+        self.assertTrue("light" in obj._hidden.keys())
+        self.assertEqual(type(obj._hidden["light"]), PersistentDict)
+        self.assertEqual(dict(obj._hidden["light"]), hiddendict)
 
 
 class _ViewletSettingsStorageSetup(BaseRegistryTests):
-
     layer = PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING
 
     def setUp(self):
         BaseRegistryTests.setUp(self)
-        self.app = self.layer['app']
-        self.site = self.layer['portal']
+        self.app = self.layer["app"]
+        self.site = self.layer["portal"]
         sm = self.site.getSiteManager()
         sm.registerUtility(ViewletSettingsStorage(), IViewletSettingsStorage)
         self.storage = getUtility(IViewletSettingsStorage)
@@ -194,29 +192,25 @@ class _ViewletSettingsStorageSetup(BaseRegistryTests):
     def _populateSite(self, order={}, hidden={}):
         for skinname in sorted(order):
             for manager in order[skinname].keys():
-                self.storage.setOrder(manager, skinname,
-                                      order[skinname][manager])
+                self.storage.setOrder(manager, skinname, order[skinname][manager])
 
         for skinname in sorted(hidden):
             for manager in hidden[skinname].keys():
-                self.storage.setHidden(manager, skinname,
-                                       hidden[skinname][manager])
+                self.storage.setHidden(manager, skinname, hidden[skinname][manager])
 
 
 class ExportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
-
     def test_empty(self):
         context = DummyExportContext(self.site)
         exportViewletSettingsStorage(context)
 
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
-        self.assertEqual(filename, 'viewlets.xml')
+        self.assertEqual(filename, "viewlets.xml")
         self._compareDOM(text, _EMPTY_EXPORT)
-        self.assertEqual(content_type, 'text/xml')
+        self.assertEqual(content_type, "text/xml")
 
     def test_normal(self):
-
         _ORDER = COMMON_SETUP_ORDER
         _HIDDEN = COMMON_SETUP_HIDDEN
         self._populateSite(order=_ORDER, hidden=_HIDDEN)
@@ -226,13 +220,12 @@ class ExportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
-        self.assertEqual(filename, 'viewlets.xml')
+        self.assertEqual(filename, "viewlets.xml")
         self._compareDOM(text, _VIEWLETS_XML)
-        self.assertEqual(content_type, 'text/xml')
+        self.assertEqual(content_type, "text/xml")
 
 
 class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
-
     _VIEWLETS_XML = _VIEWLETS_XML
     _EMPTY_EXPORT = _EMPTY_EXPORT
     _CHILD_PURGE_IMPORT = _CHILD_PURGE_IMPORT
@@ -251,21 +244,21 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
         site = self.site
         utility = self.storage
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 3)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 1)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
         context = DummyImportContext(site)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
+        context._files["viewlets.xml"] = self._EMPTY_EXPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 0)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 0)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 0)
+        self.assertEqual(len(utility.getHidden("top", "light")), 0)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 0)
 
     def test_empty_explicit_purge(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -275,21 +268,21 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         site = self.site
         utility = self.storage
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 3)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 1)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
         context = DummyImportContext(site, True)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
+        context._files["viewlets.xml"] = self._EMPTY_EXPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 0)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 0)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 0)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 0)
+        self.assertEqual(len(utility.getHidden("top", "light")), 0)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 0)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 0)
 
     def test_empty_skip_purge(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -299,21 +292,21 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         site = self.site
         utility = self.storage
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 3)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 1)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._EMPTY_EXPORT
+        context._files["viewlets.xml"] = self._EMPTY_EXPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 3)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 1)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
     def test_specific_child_purge(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -323,25 +316,25 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         site = self.site
         utility = self.storage
 
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 3)
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 1)
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 3)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 1)
         # Falls back to 'basic'
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._CHILD_PURGE_IMPORT
+        context._files["viewlets.xml"] = self._CHILD_PURGE_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(len(utility.getOrder('top', 'basic')), 1)
-        self.assertEqual(len(utility.getHidden('top', 'light')), 0)
+        self.assertEqual(len(utility.getOrder("top", "basic")), 1)
+        self.assertEqual(len(utility.getHidden("top", "light")), 0)
         # All of the following fall back to basic because there either
         # there are not anymore viewlet for the skinname or the skinname
         # is not found
-        self.assertEqual(utility._order['fancy']['top'], ())
-        self.assertEqual(len(utility.getOrder('top', 'fancy')), 1)
-        self.assertNotIn('undefined', utility._order)
-        self.assertEqual(len(utility.getOrder('top', 'undefined')), 1)
+        self.assertEqual(utility._order["fancy"]["top"], ())
+        self.assertEqual(len(utility.getOrder("top", "fancy")), 1)
+        self.assertNotIn("undefined", utility._order)
+        self.assertEqual(len(utility.getOrder("top", "undefined")), 1)
 
     def test_normal(self):
         site = self.site
@@ -350,16 +343,14 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._hidden.keys()), 0)
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._VIEWLETS_XML
+        context._files["viewlets.xml"] = self._VIEWLETS_XML
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one', ))
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
     def test_fragment_skip_purge(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -371,24 +362,21 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one', ))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT1_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('three', 'two', 'one'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("three", "two", "one"))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
-        context._files['viewlets.xml'] = self._FRAGMENT2_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT2_IMPORT
         importViewletSettingsStorage(context)
 
         # as the fragment FRAGMENT2_IMPORT sets the order for all skins
@@ -399,17 +387,19 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
 
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('three', 'four', 'two', 'one'))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', 'four'))
-        self.assertEqual(utility.getOrder('top', 'light'), ('four', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(
+            utility.getOrder("top", "fancy"), ("three", "four", "two", "one")
+        )
+        self.assertEqual(utility.getOrder("top", "basic"), ("one", "four"))
+        self.assertEqual(utility.getOrder("top", "light"), ("four",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
-        context._files['viewlets.xml'] = self._FRAGMENT1_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT1_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('four', 'three', 'two', 'one'))
+        self.assertEqual(
+            utility.getOrder("top", "fancy"), ("four", "three", "two", "one")
+        )
 
     def test_fragment3_skip_purge(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -421,24 +411,21 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one',))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT3_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT3_IMPORT
         importViewletSettingsStorage(context)
-        self.assertEqual(utility.getOrder('top', 'basic'),
-                         ('three', 'one', 'four'))
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('three', 'two', 'one', 'four'))
-        self.assertEqual(utility.getOrder('top', 'light'),
-                         ('three', 'four'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "basic"), ("three", "one", "four"))
+        self.assertEqual(
+            utility.getOrder("top", "fancy"), ("three", "two", "one", "four")
+        )
+        self.assertEqual(utility.getOrder("top", "light"), ("three", "four"))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
     def test_fragment4_remove(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -450,21 +437,19 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one', ))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT4_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT4_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getOrder('top', 'fancy'), ('two', 'one'))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "one"))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
     def test_fragment5_based_on(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -476,32 +461,26 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one',))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT5_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT5_IMPORT
         importViewletSettingsStorage(context)
 
         self.assertEqual(len(utility._order.keys()), 5)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'existing'),
-                         ('two', 'three', 'one'))
-        self.assertEqual(utility.getOrder('top', 'new'),
-                         ('three', 'two', 'one'))
-        self.assertEqual(utility.getOrder('top', 'wrongbase'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
+        self.assertEqual(utility.getOrder("top", "existing"), ("two", "three", "one"))
+        self.assertEqual(utility.getOrder("top", "new"), ("three", "two", "one"))
+        self.assertEqual(utility.getOrder("top", "wrongbase"), ("two",))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one',))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
     def test_fragment6_make_default(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -513,21 +492,18 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one', ))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT6_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT6_IMPORT
         importViewletSettingsStorage(context)
 
-        self.assertEqual(utility.getOrder('top', 'undefined'),
-                         ('one', 'two', 'three'))
-        self.assertEqual(utility.getHidden('top', 'undefined'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined"), ("one", "two", "three"))
+        self.assertEqual(utility.getHidden("top", "undefined"), ("two",))
 
     def test_fragment7_make_default(self):
         _ORDER = COMMON_SETUP_ORDER
@@ -540,30 +516,40 @@ class ImportViewletSettingsStorageTests(_ViewletSettingsStorageSetup):
         self.assertEqual(len(utility._order.keys()), 2)
         self.assertEqual(len(utility._hidden.keys()), 1)
 
-        self.assertEqual(utility.getOrder('top', 'fancy'),
-                         ('two', 'three', 'one'))
+        self.assertEqual(utility.getOrder("top", "fancy"), ("two", "three", "one"))
         # Falls back to 'basic'
-        self.assertEqual(utility.getOrder('top', 'undefined (fallback)'),
-                         ('one', ))
-        self.assertEqual(utility.getOrder('top', 'basic'), ('one', ))
-        self.assertEqual(utility.getHidden('top', 'light'), ('two', ))
+        self.assertEqual(utility.getOrder("top", "undefined (fallback)"), ("one",))
+        self.assertEqual(utility.getOrder("top", "basic"), ("one",))
+        self.assertEqual(utility.getHidden("top", "light"), ("two",))
 
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = self._FRAGMENT7_IMPORT
+        context._files["viewlets.xml"] = self._FRAGMENT7_IMPORT
         importViewletSettingsStorage(context)
-        self.assertEqual(utility.getHidden('top', 'fancy'), ('two', ))
-        self.assertEqual(utility.getHidden('top', 'basic'), ('two', ))
+        self.assertEqual(utility.getHidden("top", "fancy"), ("two",))
+        self.assertEqual(utility.getHidden("top", "basic"), ("two",))
 
     def test_syntax_error_reporting(self):
         site = self.site
         context = DummyImportContext(site, False)
-        context._files['viewlets.xml'] = """<?xml version="1.0"?>\n<"""
+        context._files["viewlets.xml"] = """<?xml version="1.0"?>\n<"""
         self.assertRaises(ExpatError, importViewletSettingsStorage, context)
 
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ViewletSettingsStorageXMLAdapterTests))
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ExportViewletSettingsStorageTests))
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(ImportViewletSettingsStorageTests))
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ViewletSettingsStorageXMLAdapterTests
+        )
+    )
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ExportViewletSettingsStorageTests
+        )
+    )
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ImportViewletSettingsStorageTests
+        )
+    )
     return suite

@@ -7,23 +7,21 @@ import doctest
 
 
 class PloneAppViewletmanagerLayer(Layer):
-
-    defaultBases = (PLONE_FIXTURE, )
+    defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # Load ZCML
         import plone.app.viewletmanager
+
         xmlconfig.file(
-            'configure.zcml',
-            plone.app.viewletmanager,
-            context=configurationContext
+            "configure.zcml", plone.app.viewletmanager, context=configurationContext
         )
 
 
 PLONE_APP_VIEWLETMANAGER_FIXTURE = PloneAppViewletmanagerLayer()
 PLONE_APP_VIEWLETMANAGER_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(PLONE_APP_VIEWLETMANAGER_FIXTURE, ),
-    name='PloneAppViewletmanagerLayer:Integration'
+    bases=(PLONE_APP_VIEWLETMANAGER_FIXTURE,),
+    name="PloneAppViewletmanagerLayer:Integration",
 )
 
 optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS

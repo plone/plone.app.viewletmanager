@@ -22,11 +22,10 @@ from zope.viewlet.interfaces import IViewlet
 from ZPublisher import Retry
 
 
-logger = getLogger('plone.app.viewletmanager')
+logger = getLogger("plone.app.viewletmanager")
 
 
 class BaseOrderedViewletManager:
-
     # Sometimes viewlets raise errors handled elsewhere -- e.g. for
     # embedded ploneformgen forms.
     # See https://github.com/plone/plone.app.viewletmanager/issues/5
@@ -55,7 +54,7 @@ class BaseOrderedViewletManager:
         for name, viewlet in viewlets:
             if IAcquirer.providedBy(viewlet):
                 viewlet = viewlet.__of__(viewlet.context)
-            if name not in hidden and guarded_hasattr(viewlet, 'render'):
+            if name not in hidden and guarded_hasattr(viewlet, "render"):
                 results.append((name, viewlet))
         return results
 
@@ -97,9 +96,9 @@ class BaseOrderedViewletManager:
             except Exception:
                 logger.exception(
                     'Error while rendering viewlet-manager "{}" '
-                    'using a template'.format(self.__name__)
+                    "using a template".format(self.__name__)
                 )
-                return f'error while rendering viewlet-manager {self.__name__}\n'
+                return f"error while rendering viewlet-manager {self.__name__}\n"
         else:
             html = []
             for viewlet in self.viewlets:
@@ -109,38 +108,33 @@ class BaseOrderedViewletManager:
                     raise
                 except Exception:
                     logger.exception(
-                        'Error while rendering viewlet-manager={}, '
-                        'viewlet={}'.format(
-                            self.__name__,
-                            viewlet.__name__
-                        )
+                        "Error while rendering viewlet-manager={}, "
+                        "viewlet={}".format(self.__name__, viewlet.__name__)
                     )
-                    html.append(
-                        f'error while rendering {viewlet.__name__}\n'
-                    )
+                    html.append(f"error while rendering {viewlet.__name__}\n")
             return "\n".join(html)
 
 
 class OrderedViewletManager(BaseOrderedViewletManager):
-    manager_template = ViewPageTemplateFile('manage-viewletmanager.pt')
+    manager_template = ViewPageTemplateFile("manage-viewletmanager.pt")
 
     def render(self):
         """See zope.contentprovider.interfaces.IContentProvider"""
 
         # check whether we are in the manager view
         is_managing = False
-        parent = getattr(self, '__parent__', None)
+        parent = getattr(self, "__parent__", None)
         while parent is not None:
             if IViewletManagementView.providedBy(parent):
                 is_managing = True
                 break
-            parent = getattr(parent, '__parent__', None)
+            parent = getattr(parent, "__parent__", None)
 
         if is_managing:
             # if we are in the managing view, then fetch all viewlets again
             viewlets = getAdapters(
-                (self.context, self.request, self.__parent__, self),
-                IViewlet)
+                (self.context, self.request, self.__parent__, self), IViewlet
+            )
 
             # sort them first
             viewlets = self.sort(viewlets)
@@ -150,8 +144,9 @@ class OrderedViewletManager(BaseOrderedViewletManager):
             hidden = frozenset(storage.getHidden(self.__name__, skinname))
 
             # then render the ones which are accessible
-            base_url = str(getMultiAdapter((self.context, self.request),
-                           name='absolute_url'))
+            base_url = str(
+                getMultiAdapter((self.context, self.request), name="absolute_url")
+            )
             query_tmpl = "%s/@@manage-viewlets?%%s" % base_url
             results = []
             for index, (name, viewlet) in enumerate(viewlets):
@@ -159,32 +154,30 @@ class OrderedViewletManager(BaseOrderedViewletManager):
                     viewlet = viewlet.__of__(viewlet.context)
                 viewlet_id = f"{self.__name__}:{name}"
                 options = {
-                    'index': index,
-                    'name': name,
-                    'hidden': name in hidden,
-                    'show_url': query_tmpl % urlencode({'show': viewlet_id}),
-                    'hide_url': query_tmpl % urlencode({'hide': viewlet_id}),
+                    "index": index,
+                    "name": name,
+                    "hidden": name in hidden,
+                    "show_url": query_tmpl % urlencode({"show": viewlet_id}),
+                    "hide_url": query_tmpl % urlencode({"hide": viewlet_id}),
                 }
 
-                if guarded_hasattr(viewlet, 'render'):
+                if guarded_hasattr(viewlet, "render"):
                     viewlet.update()
-                    options['content'] = viewlet.render()
+                    options["content"] = viewlet.render()
                 else:
-                    options['content'] = ""
+                    options["content"] = ""
                 if index > 0:
                     prev_viewlet = viewlets[index - 1][0]
-                    query = {'move_above': "{};{}".format(viewlet_id,
-                                                      prev_viewlet)}
-                    options['up_url'] = query_tmpl % urlencode(query)
+                    query = {"move_above": f"{viewlet_id};{prev_viewlet}"}
+                    options["up_url"] = query_tmpl % urlencode(query)
                 if index < (len(viewlets) - 1):
                     next_viewlet = viewlets[index + 1][0]
-                    query = {'move_below': "{};{}".format(viewlet_id,
-                                                      next_viewlet)}
-                    options['down_url'] = query_tmpl % urlencode(query)
+                    query = {"move_below": f"{viewlet_id};{next_viewlet}"}
+                    options["down_url"] = query_tmpl % urlencode(query)
                 results.append(options)
 
             self.name = self.__name__
-            self.normalized_name = self.name.replace('.', '-')
+            self.normalized_name = self.name.replace(".", "-")
             interface = list(providedBy(self).flattened())[0]
             self.interface = interface.__identifier__
 
@@ -197,7 +190,6 @@ class OrderedViewletManager(BaseOrderedViewletManager):
 
 @implementer(IViewletManagementView)
 class ManageViewlets(BrowserView):
-
     def show(self, manager, viewlet):
         storage = getUtility(IViewletSettingsStorage)
         skinname = self.context.getCurrentSkinName()
@@ -211,17 +203,18 @@ class ManageViewlets(BrowserView):
         skinname = self.context.getCurrentSkinName()
         hidden = storage.getHidden(manager, skinname)
         if viewlet not in hidden:
-            hidden = hidden + (viewlet, )
+            hidden = hidden + (viewlet,)
             storage.setHidden(manager, skinname, hidden)
 
     def _getOrder(self, manager_name):
         storage = getUtility(IViewletSettingsStorage)
         skinname = self.context.getCurrentSkinName()
         manager = queryMultiAdapter(
-            (self.context, self.request, self), IContentProvider, manager_name)
+            (self.context, self.request, self), IContentProvider, manager_name
+        )
         viewlets = getAdapters(
-            (manager.context, manager.request, manager.__parent__, manager),
-            IViewlet)
+            (manager.context, manager.request, manager.__parent__, manager), IViewlet
+        )
         order_by_name = storage.getOrder(manager_name, skinname)
         # first get the known ones
         name_map = dict(viewlets)
@@ -262,35 +255,35 @@ class ManageViewlets(BrowserView):
 
     def __call__(self):
         base_url = "%s/@@manage-viewlets" % str(
-            getMultiAdapter((self.context, self.request), name='absolute_url')
+            getMultiAdapter((self.context, self.request), name="absolute_url")
         )
-        qs = self.request.get('QUERY_STRING', None)
+        qs = self.request.get("QUERY_STRING", None)
         if qs is not None:
             query = parse_qs(qs)
-            if 'show' in query:
-                for name in query['show']:
-                    manager, viewlet = name.split(':')
+            if "show" in query:
+                for name in query["show"]:
+                    manager, viewlet = name.split(":")
                     self.show(manager, viewlet)
                     self.request.response.redirect(base_url)
-                    return ''
-            if 'hide' in query:
-                for name in query['hide']:
-                    manager, viewlet = name.split(':')
+                    return ""
+            if "hide" in query:
+                for name in query["hide"]:
+                    manager, viewlet = name.split(":")
                     self.hide(manager, viewlet)
                     self.request.response.redirect(base_url)
-                    return ''
-            if 'move_above' in query:
-                for name in query['move_above']:
-                    manager, viewlets = name.split(':')
-                    viewlet, dest = viewlets.split(';')
+                    return ""
+            if "move_above" in query:
+                for name in query["move_above"]:
+                    manager, viewlets = name.split(":")
+                    viewlet, dest = viewlets.split(";")
                     self.moveAbove(manager, viewlet, dest)
                     self.request.response.redirect(base_url)
-                    return ''
-            if 'move_below' in query:
-                for name in query['move_below']:
-                    manager, viewlets = name.split(':')
-                    viewlet, dest = viewlets.split(';')
+                    return ""
+            if "move_below" in query:
+                for name in query["move_below"]:
+                    manager, viewlets = name.split(":")
+                    viewlet, dest = viewlets.split(";")
                     self.moveBelow(manager, viewlet, dest)
                     self.request.response.redirect(base_url)
-                    return ''
+                    return ""
         return self.index()
