@@ -54,7 +54,7 @@ Initially there are no viewlets in it.
 
     >>> manager.update()
     >>> manager.render()
-    u''
+    ''
 
 Now we need some dummy viewlets.
 
@@ -115,7 +115,7 @@ Now there should be some viewlets.
 
     >>> manager.update()
     >>> manager.render()
-    u'first\nsecond\nthird'
+    'first\nsecond\nthird'
 
 Now we should be able to change the order by setting it in the storage.
 
@@ -123,7 +123,7 @@ Now we should be able to change the order by setting it in the storage.
 
     >>> manager.update()
     >>> manager.render()
-    u'third\nfirst\nsecond'
+    'third\nfirst\nsecond'
 
 The default skin should now be that same one for that manager.
 
@@ -136,7 +136,7 @@ If we change the skin, the default order should apply.
 
     >>> manager.update()
     >>> manager.render()
-    u'third\nfirst\nsecond'
+    'third\nfirst\nsecond'
 
     >>> del content.skin
 
@@ -146,4 +146,4 @@ We can also hide viewlets.
 
     >>> manager.update()
     >>> manager.render()
-    u'third\nsecond'
+    'third\nsecond'

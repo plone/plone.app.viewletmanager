@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
@@ -7,7 +6,6 @@ from zope.interface import implementer
 
 @implementer(IViewletSettingsStorage)
 class ViewletSettingsStorage(Persistent):
-
     def __init__(self):
         self._order = PersistentDict()
         self._hidden = PersistentDict()
@@ -48,7 +46,7 @@ class ViewletSettingsStorage(Persistent):
             return self._defaults.get(name)
         except AttributeError:  # Backward compatibility
             self._defaults = PersistentDict()
-            self.setDefault(name, 'Plone Default')
+            self.setDefault(name, "Plone Default")
             return self.getDefault(name)
 
     def setDefault(self, name, skinname):

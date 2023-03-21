@@ -60,7 +60,7 @@ The storage is a utility, so test if it works like that.
     >>> zope.component.getUtility(IViewletSettingsStorage)
     Traceback (most recent call last):
         ...
-    ComponentLookupError: (<InterfaceClass plone.app.viewletmanager.interfaces.IViewletSettingsStorage>, '')
+    zope.interface.interfaces.ComponentLookupError: (<InterfaceClass plone.app.viewletmanager.interfaces.IViewletSettingsStorage>, '')
 
     >>> zope.component.provideUtility(storage, IViewletSettingsStorage)
 
