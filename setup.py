@@ -21,7 +21,6 @@ install_requires = [
     "Products.GenericSetup",
     "Zope",
     "persistent",
-    "plone.app.vocabularies",
     "setuptools",
     "zope.contentprovider",
     "zope.viewlet",
