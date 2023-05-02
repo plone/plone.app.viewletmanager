@@ -19,9 +19,9 @@ extras_require = {
 
 install_requires = [
     "Products.GenericSetup",
+    "Products.CMFCore",
     "Zope",
     "persistent",
-    "plone.app.vocabularies",
     "setuptools",
     "zope.contentprovider",
     "zope.viewlet",

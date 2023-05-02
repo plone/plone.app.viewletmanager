@@ -60,4 +60,3 @@ Zope = [
   'Products.CMFDynamicViewFTI', 'zope.deprecation',
 ]
 python-dateutil = ['dateutil']
-ignore-packages = ['plone.app.vocabularies']

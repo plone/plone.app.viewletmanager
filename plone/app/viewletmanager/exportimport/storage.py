@@ -51,12 +51,12 @@ already been registered in each skin.
 
 """
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.utils import XMLAdapterBase
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
-from zope.schema.interfaces import IVocabularyFactory
 
 import os
 
@@ -109,13 +109,8 @@ class ViewletSettingsStorageNodeAdapter(XMLAdapterBase):
 
     def __init__(self, context, environ):
         super().__init__(context, environ)
-
-        self.skins = [
-            skin.token
-            for skin in getUtility(IVocabularyFactory, "plone.app.vocabularies.Skins")(
-                self.context
-            )
-        ]
+        skins_tool = getToolByName(self.context, "portal_skins", None)
+        self.skins = list(sorted(skins_tool.getSkinSelections())) if skins_tool else []
 
     def _exportNode(self):
         """
