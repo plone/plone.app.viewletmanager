@@ -19,6 +19,7 @@ extras_require = {
 
 install_requires = [
     "Products.GenericSetup",
+    "Products.CMFCore",
     "Zope",
     "persistent",
     "setuptools",
