@@ -1,6 +1,5 @@
 Introduction
 ============
-
 by Florian Schulze <fschulze@jarn.com>.
 
 This component expects you to register storage.ViewletSettingsStorage as a
