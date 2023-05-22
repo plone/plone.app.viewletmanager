@@ -1,2 +1,0 @@
-Remove transitive circular dependency on `plone.app.vocabularies`.
-[@jensens]

@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.2 (2023-05-22)
+------------------
+
+Bug fixes:
+
+
+- Remove transitive circular dependency on `plone.app.vocabularies`.
+  [@jensens] (fix-circular-dependency)
+
+
 4.0.1 (2023-03-22)
 ------------------
 
