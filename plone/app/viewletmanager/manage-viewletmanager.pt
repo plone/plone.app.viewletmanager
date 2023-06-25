@@ -15,7 +15,9 @@
          "
     >
 
-      <div class="card-header">
+      <div class="card-header"
+           i18n:ignore="true"
+      >
         ViewletManager
         <span class="text-muted"
               tal:content="view/name"
@@ -33,7 +35,9 @@
 
             <div class="card-header d-flex">
 
-              <div class="me-auto">
+              <div class="me-auto"
+                   i18n:ignore="true"
+              >
                 Viewlet
                 <span class="text-muted"
                       tal:content="viewlet/name"

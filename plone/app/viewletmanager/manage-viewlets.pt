@@ -53,7 +53,7 @@
 
         <div class="container my-5">
           <div id="content-core">
-            <p>
+            <p i18n:translate="">
                   This item does not have any body text, click the edit tab to change it.
             </p>
           </div>
