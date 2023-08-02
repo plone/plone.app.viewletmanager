@@ -25,6 +25,21 @@
         .hiddenViewlet .card {
             --bs-card-border-color: var(--bs-gray-300);
         }
+        @media (min-width: 768px) {
+          body.plone-toolbar-top {
+            padding-top:0;
+          }
+          body.plone-toolbar-top #edit-zone {
+            position:static;
+            height:auto;
+          }
+          body.plone-toolbar-top #plone-toolbar .card-body .card-body {
+            /* redefine horizontal styles */
+            display:flex;
+            flex-direction:row;
+            flex-wrap:wrap;
+          }
+        }
       </style>
 
       <div class="xcontainer">
