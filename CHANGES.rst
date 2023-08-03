@@ -8,6 +8,26 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.3 (2023-08-03)
+------------------
+
+Bug fixes:
+
+
+- Fix styles when toolbar is on top.
+  [petschki] (#29)
+- Only show one Hide or Show button per viewlet on the manage-viewlets page.
+  Make it clear that a viewlet is hidden by making it more subdued / opaque.
+  [maurits] (#3831)
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs] (cfffba8c)
+
+
 4.0.2 (2023-05-22)
 ------------------
 
