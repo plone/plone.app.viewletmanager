@@ -14,8 +14,8 @@ the skinname that is specified, in this case 'My Custom Theme')::
 
     <order manager="plone.portalheader" skinname="My
     Custom Theme" based-on="Plone Default">
-      <viewlet name="plone.global_sections" insertbefore="*"/>
-      <viewlet name="plone.site_actions" insertafter="plone.searchbox"/>
+      <viewlet name="plone.global_sections" insert-before="*"/>
+      <viewlet name="plone.site_actions" insert-after="plone.searchbox"/>
     </order>
 
 Hide a viewlet (here we hide the colophon for 'My Custom Theme')::
