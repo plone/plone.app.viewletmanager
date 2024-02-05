@@ -50,6 +50,7 @@ already been registered in each skin.
 .. original content from http://www.sixfeetup.com/company/technologies/plone-content-management-new/quick-reference-cards/swag/swag-images-files/generic_setup.pdf
 
 """
+
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.interfaces import IBody
