@@ -1,4 +1,4 @@
-from persistent.dict import PersistentDict
+from persistent.mapping import PersistentMapping
 from plone.app.viewletmanager.exportimport.storage import exportViewletSettingsStorage
 from plone.app.viewletmanager.exportimport.storage import importViewletSettingsStorage
 from plone.app.viewletmanager.exportimport.storage import (
@@ -159,13 +159,13 @@ class ViewletSettingsStorageXMLAdapterTests(BodyAdapterTestCase):
     def _verifyImport(self, obj):
         fancydict = {"top": ("two", "three", "one")}
         hiddendict = {"top": ("two",)}
-        self.assertEqual(type(obj._order), PersistentDict)
+        self.assertEqual(type(obj._order), PersistentMapping)
         self.assertTrue("fancy" in obj._order.keys())
-        self.assertEqual(type(obj._order["fancy"]), PersistentDict)
+        self.assertEqual(type(obj._order["fancy"]), PersistentMapping)
         self.assertEqual(dict(obj._order["fancy"]), fancydict)
-        self.assertEqual(type(obj._hidden), PersistentDict)
+        self.assertEqual(type(obj._hidden), PersistentMapping)
         self.assertTrue("light" in obj._hidden.keys())
-        self.assertEqual(type(obj._hidden["light"]), PersistentDict)
+        self.assertEqual(type(obj._hidden["light"]), PersistentMapping)
         self.assertEqual(dict(obj._hidden["light"]), hiddendict)
 
 
