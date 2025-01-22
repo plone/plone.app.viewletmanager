@@ -1,5 +1,5 @@
 from persistent import Persistent
-from persistent.dict import PersistentDict
+from persistent.mapping import PersistentMapping
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from zope.interface import implementer
 
@@ -7,9 +7,9 @@ from zope.interface import implementer
 @implementer(IViewletSettingsStorage)
 class ViewletSettingsStorage(Persistent):
     def __init__(self):
-        self._order = PersistentDict()
-        self._hidden = PersistentDict()
-        self._defaults = PersistentDict()
+        self._order = PersistentMapping()
+        self._hidden = PersistentMapping()
+        self._defaults = PersistentMapping()
 
     def getOrder(self, name, skinname):
         skin = self._order.get(skinname, {})
@@ -22,7 +22,7 @@ class ViewletSettingsStorage(Persistent):
         return order
 
     def setOrder(self, name, skinname, order):
-        skin = self._order.setdefault(skinname, PersistentDict())
+        skin = self._order.setdefault(skinname, PersistentMapping())
         skin[name] = tuple(order)
         if self.getDefault(name) is None:
             self.setDefault(name, skinname)
@@ -38,14 +38,14 @@ class ViewletSettingsStorage(Persistent):
         return hidden
 
     def setHidden(self, name, skinname, hidden):
-        skin = self._hidden.setdefault(skinname, PersistentDict())
+        skin = self._hidden.setdefault(skinname, PersistentMapping())
         skin[name] = tuple(hidden)
 
     def getDefault(self, name):
         try:
             return self._defaults.get(name)
         except AttributeError:  # Backward compatibility
-            self._defaults = PersistentDict()
+            self._defaults = PersistentMapping()
             self.setDefault(name, "Plone Default")
             return self.getDefault(name)
 
@@ -53,5 +53,5 @@ class ViewletSettingsStorage(Persistent):
         try:
             self._defaults[name] = skinname
         except AttributeError:  # Backward compatibility
-            self._defaults = PersistentDict()
+            self._defaults = PersistentMapping()
             self.setDefault(name, skinname)
