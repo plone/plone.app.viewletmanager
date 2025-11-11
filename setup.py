@@ -22,7 +22,6 @@ install_requires = [
     "Products.CMFCore",
     "Zope",
     "persistent",
-    "setuptools",
     "zope.contentprovider",
     "zope.viewlet",
 ]
