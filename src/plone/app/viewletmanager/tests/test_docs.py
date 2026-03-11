@@ -3,7 +3,6 @@ from plone.app.viewletmanager.testing import optionflags
 import doctest
 import unittest
 
-
 doc_tests = [
     "storage.rst",
     "manager.rst",

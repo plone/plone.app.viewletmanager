@@ -21,7 +21,6 @@ from zope.interface import providedBy
 from zope.viewlet.interfaces import IViewlet
 from ZPublisher import Retry
 
-
 logger = getLogger("plone.app.viewletmanager")
 
 
