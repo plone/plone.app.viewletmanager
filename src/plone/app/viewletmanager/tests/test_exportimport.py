@@ -18,7 +18,6 @@ from zope.component import getUtility
 
 import unittest
 
-
 COMMON_SETUP_ORDER = {
     "basic": {"top": ("one",)},
     "fancy": {"top": ("two", "three", "one")},
