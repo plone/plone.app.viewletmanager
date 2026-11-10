@@ -21,5 +21,15 @@ class IViewletSettingsStorage(Interface):
         given viewletmanager (name) and skin name."""
 
 
+class IAdditionalViewlets(Interface):
+    """Contributes viewlets to a manager they are not registered for.
+
+    Looked up as subscription adapters for (context, request, view, manager).
+    """
+
+    def viewlets():
+        """Return an iterable of (name, viewlet) pairs."""
+
+
 class IViewletManagementView(Interface):
     pass
