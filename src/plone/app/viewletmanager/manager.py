@@ -3,6 +3,7 @@ from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
 from logging import getLogger
 from operator import itemgetter
+from plone.app.viewletmanager.interfaces import IAdditionalViewlets
 from plone.app.viewletmanager.interfaces import IViewletManagementView
 from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
 from Products.Five import BrowserView
@@ -15,9 +16,13 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
+from zope.component import subscribers
 from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import implementer
 from zope.interface import providedBy
+from zope.interface.interfaces import ComponentLookupError
+from zope.location.interfaces import ILocation
+from zope.security.interfaces import Unauthorized
 from zope.viewlet.interfaces import IViewlet
 from ZPublisher import Retry
 
@@ -29,6 +34,51 @@ class BaseOrderedViewletManager:
     # embedded ploneformgen forms.
     # See https://github.com/plone/plone.app.viewletmanager/issues/5
     _exceptions_handled_elsewhere = (ConflictError, KeyboardInterrupt, Retry)
+
+    def _additional_viewlets(self):
+        required = (self.context, self.request, self.__parent__, self)
+        for source in subscribers(required, IAdditionalViewlets):
+            yield from source.viewlets()
+
+    def available_viewlets(self):
+        """All (name, viewlet) pairs of this manager, before filtering.
+
+        Registered viewlets win over contributed ones of the same name.
+        """
+        viewlets = dict(
+            getAdapters(
+                (self.context, self.request, self.__parent__, self), IViewlet
+            )
+        )
+        for name, viewlet in self._additional_viewlets():
+            viewlets.setdefault(name, viewlet)
+        return list(viewlets.items())
+
+    def update(self):
+        # zope.viewlet's update() with available_viewlets() as the source.
+        self._ViewletManagerBase__updated = True
+        viewlets = self.sort(self.filter(self.available_viewlets()))
+        self.viewlets = []
+        for name, viewlet in viewlets:
+            if ILocation.providedBy(viewlet):
+                viewlet.__name__ = name
+            self.viewlets.append(viewlet)
+        self._updateViewlets()
+
+    def __getitem__(self, name):
+        try:
+            return super().__getitem__(name)
+        except ComponentLookupError:
+            pass
+        for viewlet_name, viewlet in self._additional_viewlets():
+            if viewlet_name != name:
+                continue
+            if not guarded_hasattr(viewlet, "render"):
+                raise Unauthorized(
+                    f"You are not authorized to access the provider called `{name}`."
+                )
+            return viewlet
+        raise ComponentLookupError(f"No provider with name `{name}` found.")
 
     def filter(self, viewlets):
         """Filter the viewlets.
@@ -131,9 +181,7 @@ class OrderedViewletManager(BaseOrderedViewletManager):
 
         if is_managing:
             # if we are in the managing view, then fetch all viewlets again
-            viewlets = getAdapters(
-                (self.context, self.request, self.__parent__, self), IViewlet
-            )
+            viewlets = self.available_viewlets()
 
             # sort them first
             viewlets = self.sort(viewlets)
@@ -211,9 +259,13 @@ class ManageViewlets(BrowserView):
         manager = queryMultiAdapter(
             (self.context, self.request, self), IContentProvider, manager_name
         )
-        viewlets = getAdapters(
-            (manager.context, manager.request, manager.__parent__, manager), IViewlet
-        )
+        if isinstance(manager, BaseOrderedViewletManager):
+            viewlets = manager.available_viewlets()
+        else:
+            viewlets = getAdapters(
+                (manager.context, manager.request, manager.__parent__, manager),
+                IViewlet,
+            )
         order_by_name = storage.getOrder(manager_name, skinname)
         # first get the known ones
         name_map = dict(viewlets)

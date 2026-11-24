@@ -147,3 +147,78 @@ We can also hide viewlets.
     >>> manager.update()
     >>> manager.render()
     'third\nsecond'
+
+Additional viewlets
+-------------------
+
+A manager also renders viewlets that are not registered for it. Any
+subscription adapter for ``(context, request, view, manager)`` providing
+``IAdditionalViewlets`` can contribute ``(name, viewlet)`` pairs, for example
+viewlets whose manager assignment is kept in the database instead of ZCML.
+
+    >>> storage.setHidden('left', 'Plone Default', ())
+    >>> storage.setOrder('left', 'Plone Default', ())
+
+    >>> class FourthViewlet(BaseViewlet):
+    ...     name = u"fourth"
+
+    >>> from plone.app.viewletmanager.interfaces import IAdditionalViewlets
+    >>> from zope.component import provideSubscriptionAdapter
+    >>> @implementer(IAdditionalViewlets)
+    ... class ExtraViewlets:
+    ...
+    ...     def __init__(self, context, request, view, manager):
+    ...         self.required = (context, request, view, manager)
+    ...
+    ...     def viewlets(self):
+    ...         yield 'fourth', FourthViewlet(*self.required)
+    ...         yield 'second', FourthViewlet(*self.required)
+
+    >>> provideSubscriptionAdapter(
+    ...     ExtraViewlets,
+    ...     (Interface, IDefaultBrowserLayer, IBrowserView, ILeftColumn),
+    ...     IAdditionalViewlets)
+
+The contributed viewlet renders along with the registered ones. A name that is
+already registered for the manager keeps its registered viewlet.
+
+    >>> manager.update()
+    >>> manager.render()
+    'first\nfourth\nsecond\nthird'
+
+Order and visibility come from the storage, exactly as for registered
+viewlets.
+
+    >>> storage.setOrder('left', 'Plone Default',
+    ...                  ('third', 'fourth', 'first', 'second'))
+    >>> manager.update()
+    >>> manager.render()
+    'third\nfourth\nfirst\nsecond'
+
+    >>> storage.setHidden('left', 'Plone Default', ('fourth',))
+    >>> manager.update()
+    >>> manager.render()
+    'third\nfirst\nsecond'
+
+    >>> storage.setHidden('left', 'Plone Default', ())
+
+The manager hands out a contributed viewlet by name, too.
+
+    >>> manager['fourth'].render()
+    'fourth'
+    >>> manager.get('missing') is None
+    True
+
+The management view moves contributed viewlets like any other.
+
+    >>> from zope.contentprovider.interfaces import IContentProvider
+    >>> provideAdapter(
+    ...     LeftColumn,
+    ...     (Interface, IDefaultBrowserLayer, IBrowserView),
+    ...     IContentProvider, name='left')
+
+    >>> from plone.app.viewletmanager.manager import ManageViewlets
+    >>> manage = ManageViewlets(content, request)
+    >>> manage.moveBelow('left', 'fourth', 'second')
+    >>> storage.getOrder('left', 'Plone Default')
+    ('third', 'first', 'second', 'fourth')
